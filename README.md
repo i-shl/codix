@@ -1,77 +1,79 @@
+[English](./README.md) | [中文](./README.zh-CN.md)
+
 # codix
 
-一个 AI Agent：同时提供 **命令行（CLI）** 与 **桌面端（Electron + Vue 3）** 两种形态，底层共享同一套核心引擎 `@codix/core`。
+codix is an AI Agent that ships both a **command-line (CLI)** and a **desktop client (Electron + Vue 3)**, sharing one core engine `@codix/core`.
 
-- 工具调用：Read / Write / Edit / Bash / Glob / Grep / LS / WebFetch / WebSearch / TodoWrite
-- MCP：连接任意 MCP Server（stdio / sse / http 三种 transport）
-- Skill 系统：manifest 协议，支持本地目录 / npm / git / tarball 安装
-- 多模型：OpenAI 兼容、Anthropic、Gemini，运行时自由切换
-- 会话与历史：JSON 文件持久化、列表、恢复
-- 多模态：粘贴图片、附加文件
-- 全局 / 项目级规则（`~/.codix/rules.md`、`<project>/.codix/rules.md`）
-- 上下文压缩：超过阈值自动压缩
+## What is codix?
 
-> **权限模式说明**：codix 默认处于「全自动」模式，工具调用直接执行，无需逐次确认。
+codix (a blend of "code" + "ix") is a local-first AI coding agent. You point it at a project directory and it can read, edit, run commands, call tools, and chain MCP servers / skills — all driven by a large language model of your choice. The same engine powers two front-ends: a lightweight ANSI terminal UI and a full Electron desktop app, so you can use whichever fits your workflow.
 
----
+## Features
 
-## 支持的平台
+- Tool use: Read / Write / Edit / Bash / Glob / Grep / LS / WebFetch / WebSearch / TodoWrite
+- MCP: connect any MCP server (stdio / sse / http transports)
+- Skills: manifest protocol, install from local dir / npm / git / tarball
+- Multi-model: OpenAI-compatible, Anthropic, Gemini — switch freely at runtime
+- Sessions & history: JSON-file persistence, listing, resume
+- Multimodal: paste images, attach files
+- Global / project rules (`~/.codix/rules.md`, `<project>/.codix/rules.md`)
+- Context compaction: auto-compress beyond a threshold
 
-| 形态 | Windows | macOS | Linux |
+> **Permission model:** codix runs in "full-auto" mode by default — tool calls execute directly without per-step confirmation.
+
+## Supported platforms
+
+| Form | Windows | macOS | Linux |
 |---|:---:|:---:|:---:|
-| CLI（Node.js） | ✅ | ✅ | ✅ |
-| 桌面端（Electron） | ✅（NSIS 安装包） | ✅（DMG） | ✅（AppImage / deb） |
+| CLI (Node.js) | ✅ | ✅ | ✅ |
+| Desktop (Electron) | ✅ (NSIS installer) | ✅ (DMG) | ✅ (AppImage / deb) |
 
-- CLI 只要有 **Node.js ≥ 20** 即可在三者上运行。
-- 桌面端安装包由 electron-builder 生成，见下方「打包」章节。
-- 本仓库主要在 **Windows** 上开发与验证。
+- The CLI runs on any of the three with **Node.js ≥ 20**.
+- Desktop installers are produced by electron-builder — see the "Packaging" section below.
+- This repo is mainly developed and verified on **Windows**.
 
----
-
-## 仓库结构（pnpm monorepo）
+## Repository structure (pnpm monorepo)
 
 ```
 codix/
 ├── packages/
-│   ├── core/        共享核心（Agent / 工具 / MCP / 模型 / Skill / 会话 / 规则）
-│   ├── cli/         纯 ANSI 手写 TUI 的命令行客户端（无第三方终端框架）
-│   └── desktop/     Electron + Vue 3 + Vite 桌面端
-├── examples/        示例（skills 等）
+│   ├── core/        Shared core (Agent / tools / MCP / models / Skills / sessions / rules)
+│   ├── cli/         CLI client with a hand-written ANSI TUI (no third-party terminal framework)
+│   └── desktop/     Electron + Vue 3 + Vite desktop client
+├── examples/        Examples (skills, etc.)
 ├── LICENSE          MIT
-└── README.md        本文件
+└── README.md        This file
 ```
 
-CLI 与桌面端都依赖 `@codix/core`，核心引擎只写一份。
+Both the CLI and the desktop client depend on `@codix/core` — the engine is written only once.
 
----
+## 1. Run / develop from source (pnpm)
 
-## 一、从源码运行 / 开发（pnpm）
+For users who want to hack on the code or run the latest build.
 
-适合想改代码或本地跑最新版的用户。
-
-### 1. 安装 Node.js ≥ 20 与 pnpm
+### Install Node.js ≥ 20 and pnpm
 
 ```bash
-# 安装 pnpm（如未安装）
+# install pnpm (if not already installed)
 npm i -g pnpm
 ```
 
-### 2. 安装依赖并构建
+### Install dependencies and build
 
 ```bash
 git clone https://github.com/i-shl/codix.git
 cd codix
-pnpm install      # 会自动执行 prepare，构建 core + cli
-pnpm build        # 构建全部（core / cli / desktop）
+pnpm install      # runs prepare automatically, building core + cli
+pnpm build        # build everything (core / cli / desktop)
 ```
 
-### 3. 初始化配置
+### Initialize config
 
 ```bash
 node packages/cli/dist/index.js --config
 ```
 
-会创建 `~/.codix/config.json`，编辑它填入 API Key：
+This creates `~/.codix/config.json`; edit it to add your API key:
 
 ```json
 {
@@ -79,18 +81,18 @@ node packages/cli/dist/index.js --config
     "default": {
       "provider": "openai-compatible",
       "model": "gpt-4o",
-      "apiKey": "sk-你的key",
+      "apiKey": "sk-your-key",
       "baseURL": "https://api.openai.com/v1"
     },
     "claude": {
       "provider": "anthropic",
       "model": "claude-sonnet-4-5",
-      "apiKey": "sk-ant-你的key"
+      "apiKey": "sk-ant-your-key"
     },
     "deepseek": {
       "provider": "openai-compatible",
       "model": "deepseek-chat",
-      "apiKey": "sk-你的key",
+      "apiKey": "sk-your-key",
       "baseURL": "https://api.deepseek.com/v1"
     }
   },
@@ -107,175 +109,160 @@ node packages/cli/dist/index.js --config
 }
 ```
 
-> API Key 只存在于你本机的 `~/.codix/`（已被 `.gitignore` 忽略），**不会进入源码仓库**。
+> API keys live only in your local `~/.codix/` (ignored by `.gitignore`) and **never enter the source repo**.
 
-### 4. 启动
+### Launch
 
 ```bash
 # CLI
-node packages/cli/dist/index.js ./你的项目目录
+node packages/cli/dist/index.js ./your-project-dir
 
-# 桌面端（开发模式，需先 pnpm build:desktop）
+# Desktop (dev mode, requires pnpm build:desktop first)
 pnpm dev:desktop
-# 或仅启动一次：
+# or a one-off launch:
 pnpm build:desktop && cd packages/desktop && npx electron .
 ```
 
----
+## 2. Install CLI from GitHub via npm (no clone)
 
-## 二、通过 npm 从 GitHub 安装 CLI（无需 clone）
-
-只想用 CLI、不想碰源码，可以直接从 GitHub 安装：
+If you just want the CLI without touching the source, install it directly from GitHub:
 
 ```bash
 npm i -g github:i-shl/codix
 ```
 
-安装过程会：
+The install will:
 
-1. 克隆仓库并安装依赖；
-2. 自动执行 `prepare` 脚本构建 `@codix/core` 与 `@codix/cli`；
-3. 把 `codix` 命令链接到全局 PATH。
+1. Clone the repo and install dependencies;
+2. Run the `prepare` script to build `@codix/core` and `@codix/cli` automatically;
+3. Link the `codix` command into your global PATH.
 
-安装完成后即可在任意目录使用：
+After installation you can use it from any directory:
 
 ```bash
-codix ./你的项目目录
-codix --config      # 初始化配置
-codix --list        # 列出历史会话
+codix ./your-project-dir
+codix --config      # initialize config
+codix --list        # list session history
 ```
 
-> 说明：全局安装只装 CLI 所需的运行时依赖（含 `@codix/core`），**不会下载 Electron**，所以安装很快。
-> 若你的 npm 版本较旧（< 8.5），请先 `npm i -g npm@latest`。
+> Note: a global install only pulls the CLI runtime deps (including `@codix/core`) and **does not download Electron**, so it is fast. If your npm is old (< 8.5), run `npm i -g npm@latest` first.
 
----
+## 3. Packaging (publish to GitHub Releases)
 
-## 三、打包（发布到 GitHub Releases）
+### Desktop installer
 
-### 桌面端安装包
-
-在 **有网络的对应平台** 上执行（打包会下载该平台的 Electron 二进制）：
+Run on the **corresponding platform with network access** (packaging downloads that platform's Electron binary):
 
 ```bash
-# Windows → 生成 codix-Setup-x.y.z.exe（NSIS）
+# Windows → codix-Setup-x.y.z.exe (NSIS)
 pnpm package:desktop:win
 
-# macOS → 生成 codix-x.y.z.dmg
+# macOS → codix-x.y.z.dmg
 pnpm package:desktop:mac
 
-# Linux → 生成 codix-x.y.z.AppImage 与 .deb
+# Linux → codix-x.y.z.AppImage and .deb
 pnpm package:desktop:linux
 ```
 
-产物位于 `packages/desktop/release/`（已被 `.gitignore` 忽略，不应入库）。
+Artifacts land in `packages/desktop/release/` (ignored by `.gitignore`, not committed).
 
-- 应用图标位于 `packages/desktop/build/icon.png` 与 `icon.ico`，可自行替换。
-- Windows NSIS 安装包支持「选择安装目录」「桌面快捷方式」。
+- App icons are `packages/desktop/build/icon.png` and `icon.ico`; replace them freely.
+- The Windows NSIS installer supports "choose install directory" and "desktop shortcut".
 
-### CLI 发布到 npm
+### Publish CLI to npm
 
-CLI 以根包 `codix` 的形式发布到 npm registry。根 `package.json` 的 `files` 已包含 `packages/cli` 与 `packages/core` 的构建产物——核心引擎随包一起打包，`bin` 为 `codix` 命令，安装后无需再拉取 `@codix/core`。
+The CLI is published to the npm registry as the root package `codix`. The root `package.json` `files` field already includes the built outputs of `packages/cli` and `packages/core` — the core engine ships with the package, and the `bin` is the `codix` command, so no separate `@codix/core` install is needed after install.
 
 ```bash
-# 1. 先构建全部（也可不手动构建，npm publish 时的 prepare 会自动再构建一次）
+# 1. Build everything first (optional — npm publish's prepare rebuilds anyway)
 pnpm build
 
-# 2. 发布（需先 npm login，且对 codix 包有发布权限）
+# 2. Publish (requires npm login and publish rights for the codix package)
 npm publish
 ```
 
-发布后用户安装使用：
+After publishing, users install and run:
 
 ```bash
 npm i -g codix
-codix ./你的项目目录
+codix ./your-project-dir
 codix --config
 ```
 
-> 说明：
-> - `npm publish` 会执行 `prepare`（`tsc -p packages/core/tsconfig.json && tsc -p packages/cli/tsconfig.json`）自动构建 core 与 cli。
-> - 桌面端不发布到 npm，仅通过上面的「打包」产出安装包上传到 GitHub Releases。
+> Notes:
+> - `npm publish` runs `prepare` (`tsc -p packages/core/tsconfig.json && tsc -p packages/cli/tsconfig.json`) to rebuild core and cli automatically.
+> - The desktop client is not published to npm; only the installers above are uploaded to GitHub Releases.
 
----
+## 4. Using the CLI
 
-## 四、CLI 使用
+- Type a message and press Enter to send.
+- Type `/` to show all commands.
+- `/model claude` to switch models.
+- `/cd ..` to change the project directory.
+- `/install npm:xxx` to install a skill.
 
-- 直接输入消息，Enter 发送
-- 输入 `/` 显示所有命令
-- `/model claude` 切换模型
-- `/cd ..` 切换项目目录
-- `/install npm:xxx` 安装 skill
-
-Slash 命令：
+Slash commands:
 
 ```
-/help                显示帮助
-/exit, /quit         退出
-/model [<key>]       列出或切换默认模型
-/clear               清屏
-/sessions            列出历史会话
-/resume <id>         恢复会话
-/new [title]         新建会话
-/cd <dir>            切换项目目录
-/mcp list            列出 MCP 服务器
-/skills              列出已安装 skill
-/install <src>       安装 skill
-/tools               列出可用工具
-/config show|path    配置信息
-/rules [global]      查看规则文件
+/help                 show help
+/exit, /quit         quit
+/model [<key>]       list or switch the default model
+/clear               clear screen
+/sessions            list session history
+/resume <id>         resume a session
+/new [title]         start a new session
+/cd <dir>            change project directory
+/mcp list            list MCP servers
+/skills              list installed skills
+/install <src>       install a skill
+/tools               list available tools
+/config show|path    show config info
+/rules [global]      view rule files
 ```
 
-CLI 选项：
+CLI options:
 
 ```
--m, --model <key>     指定默认模型
--r, --resume <id>     恢复会话
--l, --list            列出所有会话
--c, --config          创建/查看配置
+-m, --model <key>     specify the default model
+-r, --resume <id>     resume a session
+-l, --list            list all sessions
+-c, --config          create / view config
 ```
 
----
+## 5. Directory conventions
 
-## 五、目录约定
+- `~/.codix/` — global config, sessions, skills (**contains API keys, git-ignored**)
+- `<project>/.codix/` — project-level config, rules, skills
+- `~/.codix/rules.md` — global rules
+- `<project>/.codix/rules.md` — project-level rules
+- `~/.codix/sessions/` — session storage
+- `~/.codix/skills/` — global skills
 
-- `~/.codix/` — 全局配置、会话、技能（**含 API Key，已被 git 忽略**）
-- `<project>/.codix/` — 项目级配置、规则、skills
-- `~/.codix/rules.md` — 全局规则
-- `<project>/.codix/rules.md` — 项目级规则
-- `~/.codix/sessions/` — 会话存储
-- `~/.codix/skills/` — 全局 skill
+## Interface language (English / 中文)
 
----
+codix ships a bilingual UI (**English / 中文**). The **default is Chinese (zh)** for the interface.
 
-## 界面语言（中 / 英）
+- **CLI**: language is resolved before startup by this priority: `--lang` / `-L` > env `CODIX_LANG` or `LANG` > config `ui.language` > default (Chinese).
+  - Flag: `codix --lang en ./project-dir` (or `-L en`) switches to English.
+  - Env: `CODIX_LANG=en codix ./project-dir`, or just use the system `LANG=en_US.UTF-8` (the region suffix is recognized).
+  - Config: add `"ui": { "language": "en" }` to `~/.codix/config.json` to apply to every CLI launch.
+- **Desktop**: open **Settings → Language** and click **中文 / English** to switch instantly; the choice is written to `localStorage` and synced to the global config `ui.language`, so the CLI reuses it.
 
-codix 内置中英双语界面，**默认中文**。
+> Switching language only changes the UI text; it does not change the language of the model's replies.
 
-- **CLI**：启动前按以下优先级确定语言：`--lang` / `-L` > 环境变量 `CODIX_LANG` 或 `LANG` > 配置文件 `ui.language` > 默认（中文）。
-  - 命令行参数：`codix --lang en ./项目目录`（或 `-L en`）切换到英文。
-  - 环境变量：`CODIX_LANG=en codix ./项目目录`，或直接用系统 `LANG=en_US.UTF-8`（带区域后缀也能识别）。
-  - 配置文件：`~/.codix/config.json` 里加 `"ui": { "language": "en" }`，对所有 CLI 启动生效。
-- **桌面端**：打开「设置 → 语言」，点「中文 / English」即可即时切换；选择会写入 `localStorage` 并同步到全局配置 `ui.language`，供 CLI 复用。
-
-> 语言切换只影响界面文案，不影响模型回复的语言。
-
----
-
-## 六、测试
+## 6. Testing
 
 ```bash
-pnpm test                 # 全部（core + desktop + cli）
-pnpm -r typecheck         # 类型检查
-pnpm -r build             # 构建全部
+pnpm test                 # all (core + desktop + cli)
+pnpm -r typecheck         # type checking
+pnpm -r build             # build everything
 ```
 
-- CLI：TUI 单元测试 + E2E（mock 模型 HTTP server），无需真实 Key。
-- Desktop：消息队列单元测试。
-- Core：离线用例（smoke / agent / adapters / markdown 等）无需 Key；联网用例（advanced / suite-a / integration）需要真实模型 Key。
+- CLI: TUI unit tests + E2E (mock model HTTP server), no real key needed.
+- Desktop: message-queue unit tests.
+- Core: offline cases (smoke / agent / adapters / markdown, etc.) need no key; online cases (advanced / suite-a / integration) need a real model key.
 
----
-
-## 七、Skill 协议
+## 7. Skill protocol
 
 ```json
 // manifest.json
@@ -283,11 +270,11 @@ pnpm -r build             # 构建全部
   "name": "my-skill",
   "version": "0.1.0",
   "description": "My skill",
-  "prompt": "可选，注入 system prompt 的片段",
+  "prompt": "optional; a fragment injected into the system prompt",
   "tools": [
     {
       "name": "my_tool",
-      "description": "工具说明",
+      "description": "tool description",
       "inputSchema": { "type": "object", "properties": { } },
       "entry": "./tools/my-tool.js"
     }
@@ -307,11 +294,9 @@ export default {
 };
 ```
 
----
+## About this project
 
-## 关于本项目
-
-codix 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成——架构设计、编码、测试与文档均在一次连续的 AI 协作中产出。
+codix was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model** — architecture, coding, testing, and docs were all produced in one continuous AI collaboration.
 
 ## License
 

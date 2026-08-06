@@ -1,119 +1,110 @@
+[English](./README.md) | [中文](./README.zh-CN.md)
+
 # @codix/cli
 
-codix 的命令行客户端：一个 **纯 ANSI 手写 TUI**（不依赖 ink / react 等终端框架），运行在 Node.js ≥ 20 上，Windows / macOS / Linux 通用。
+codix's command-line client: a **hand-written ANSI TUI** (no ink / react style terminal framework), running on Node.js ≥ 20, portable across Windows / macOS / Linux.
 
-底层复用 `@codix/core` 核心引擎。
+It reuses the `@codix/core` engine underneath.
 
----
-
-## 一、从 GitHub 直接安装（推荐，无需 clone）
+## 1. Install directly from GitHub (recommended, no clone)
 
 ```bash
-npm i -g github:YOUR_GITHUB_USERNAME/codix
+npm i -g github:i-shl/codix
 ```
 
-安装会自动 `prepare` 构建 core + cli，并把 `codix` 命令加入全局 PATH。
-（全局安装只装 CLI 运行时依赖，**不下载 Electron**，速度快。需要 npm ≥ 8.5。）
+Installation runs `prepare` automatically to build core + cli and adds the `codix` command to your global PATH. (A global install only pulls CLI runtime deps and **does not download Electron**, so it is fast. Requires npm ≥ 8.5.)
 
-安装后：
+After install:
 
 ```bash
-codix ./你的项目目录     # 在指定目录启动
-codix --config          # 初始化配置
-codix --list            # 列出历史会话
+codix ./your-project-dir     # start in the given directory
+codix --config              # initialize config
+codix --list                # list session history
 ```
 
----
-
-## 二、从源码运行 / 开发（pnpm）
+## 2. Run / develop from source (pnpm)
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/codix.git
+git clone https://github.com/i-shl/codix.git
 cd codix
 pnpm install
-pnpm build:cli             # 仅构建 core + cli
+pnpm build:cli             # build core + cli only
 ```
 
-运行：
+Run:
 
 ```bash
-node packages/cli/dist/index.js ./你的项目目录
+node packages/cli/dist/index.js ./your-project-dir
 ```
 
-选项：
+Options:
 
 ```
--m, --model <key>     指定默认模型
--r, --resume <id>     恢复会话
--l, --list            列出所有会话
--c, --config          创建/查看配置
--L, --lang <zh|en>    界面语言（默认 zh 中文；也可用环境变量 CODIX_LANG / LANG）
+-m, --model <key>     specify the default model
+-r, --resume <id>     resume a session
+-l, --list            list all sessions
+-c, --config          create / view config
+-L, --lang <zh|en>    UI language (default zh Chinese; also via env CODIX_LANG / LANG)
 ```
 
-界面语言（中 / 英，默认中文）：
+Interface language (English / 中文, default Chinese):
 
-- 命令行：`codix --lang en ./项目目录`（或 `-L en`）直接切英文。
-- 环境变量：`CODIX_LANG=en codix ./项目目录`，或用系统 `LANG=en_US.UTF-8`（带区域后缀也能识别）。
-- 配置文件：`~/.codix/config.json` 加 `"ui": { "language": "en" }`，对所有 CLI 启动生效。
+- CLI: `codix --lang en ./project-dir` (or `-L en`) switches to English.
+- Env: `CODIX_LANG=en codix ./project-dir`, or use the system `LANG=en_US.UTF-8` (region suffix recognized).
+- Config: add `"ui": { "language": "en" }` to `~/.codix/config.json` to apply to every CLI launch.
 
-优先级：`--lang` > 环境变量 > 配置 `ui.language` > 默认（中文）。语言只影响界面文案，不影响模型回复语言。
+Priority: `--lang` > env > config `ui.language` > default (Chinese). Language only affects UI text, not the model's reply language.
 
-首次使用先初始化配置：
+Initialize config on first use:
 
 ```bash
 node packages/cli/dist/index.js --config
-# 编辑 ~/.codix/config.json 填入 API Key
+# edit ~/.codix/config.json to add your API key
 ```
 
----
-
-## 三、Slash 命令（运行时）
+## 3. Slash commands (runtime)
 
 ```
-/help                显示帮助
-/exit, /quit         退出
-/model [<key>]       列出或切换默认模型
-/clear               清屏
-/sessions            列出历史会话
-/resume <id>         恢复会话
-/new [title]         新建会话
-/cd <dir>            切换项目目录
-/mcp list            列出 MCP 服务器
-/skills              列出已安装 skill
-/install <src>       安装 skill
-/tools               列出可用工具
-/config show|path    配置信息
-/rules [global]      查看规则文件
+/help                 show help
+/exit, /quit         quit
+/model [<key>]       list or switch the default model
+/clear               clear screen
+/sessions            list session history
+/resume <id>         resume a session
+/new [title]         start a new session
+/cd <dir>            change project directory
+/mcp list            list MCP servers
+/skills              list installed skills
+/install <src>       install a skill
+/tools               list available tools
+/config show|path    show config info
+/rules [global]      view rule files
 ```
 
----
-
-## 四、构建与发布
+## 4. Build & publish
 
 ```bash
-pnpm build:cli        # tsc 编译到 dist/
-pnpm --filter @codix/cli test   # TUI 单测 + E2E（mock 模型，无需 Key）
+pnpm build:cli        # tsc compile to dist/
+pnpm --filter @codix/cli test   # TUI unit + E2E (mock model, no key needed)
 ```
 
-发布到 npm registry：
+Publish to the npm registry:
 
 ```bash
-npm publish           # 根 package.json 的 files 已限定只发布 cli + core 构建产物
+npm publish           # root package.json files field limits publish to cli + core build outputs
 ```
 
-> 本地链接调试：`pnpm link:cli` 会把 `codix` 命令软链到全局。
+> Local link for debugging: `pnpm link:cli` symlinks the `codix` command globally.
 
----
+## 5. Config example
 
-## 五、配置示例
-
-`~/.codix/config.json`：
+`~/.codix/config.json`:
 
 ```json
 {
   "ui": { "language": "zh" },
   "models": {
-    "default": { "provider": "openai-compatible", "model": "gpt-4o", "apiKey": "sk-你的key", "baseURL": "https://api.openai.com/v1" }
+    "default": { "provider": "openai-compatible", "model": "gpt-4o", "apiKey": "sk-your-key", "baseURL": "https://api.openai.com/v1" }
   },
   "defaultModel": "default",
   "permissionRules": [],
@@ -121,10 +112,8 @@ npm publish           # 根 package.json 的 files 已限定只发布 cli + core
 }
 ```
 
-API Key 仅存于本机 `~/.codix/`（被 git 忽略），不入源码。
+API keys live only in your local `~/.codix/` (git-ignored) and never enter the source.
 
----
+## About this project
 
-## 关于本项目
-
-codix 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成。
+codix was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model**.
