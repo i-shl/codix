@@ -1,6 +1,6 @@
 {
   "name": "@voked/desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "voked Desktop - Electron + Vue3 AI agent client.",
   "main": "./dist-electron/main.js",
   "author": "voked",
