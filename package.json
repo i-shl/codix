@@ -1,5 +1,5 @@
 {
-  "name": "codix",
+  "name": "@i-shl/codix",
   "version": "0.1.0",
   "private": false,
   "description": "codix - AI Agent CLI + Electron Desktop, supports tools, MCP, skills, multi-model, sessions, permissions.",
