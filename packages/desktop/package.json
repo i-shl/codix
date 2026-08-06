@@ -1,0 +1,86 @@
+{
+  "name": "@codix/desktop",
+  "version": "0.1.0",
+  "description": "codix Desktop - Electron + Vue3 AI agent client.",
+  "main": "./dist-electron/main.js",
+  "author": "codix",
+  "scripts": {
+    "dev:renderer": "vite",
+    "dev:electron": "tsc -p tsconfig.electron.json --watch",
+    "dev": "concurrently -k \"pnpm dev:renderer\" \"pnpm dev:electron\" \"wait-on tcp:5173 && electron .\"",
+    "build:renderer": "vue-tsc -p tsconfig.json --noEmit && vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build": "pnpm build:renderer && pnpm build:electron",
+    "preview": "electron .",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit && tsc -p tsconfig.electron.json --noEmit",
+    "test": "node --experimental-strip-types test/queue.ts",
+    "package": "pnpm build && electron-builder",
+    "package:win": "pnpm build && electron-builder --win",
+    "package:mac": "pnpm build && electron-builder --mac",
+    "package:linux": "pnpm build && electron-builder --linux"
+  },
+  "dependencies": {
+    "@codix/core": "file:../core",
+    "markstream-vue": "^1.0.8",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@vitejs/plugin-vue": "^5.0.0",
+    "concurrently": "^8.2.2",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.0",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.codix.app",
+    "productName": "codix",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "dist-renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "codix"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "asar": true,
+    "compression": "maximum",
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": false,
+    "afterPack": "./after-pack.cjs"
+  }
+}

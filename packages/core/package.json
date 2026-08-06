@@ -1,0 +1,42 @@
+{
+  "name": "@codix/core",
+  "version": "0.1.0",
+  "description": "Core engine for codix: Agent loop, tools, MCP, models, skills, permissions, sessions.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./markdown": {
+      "types": "./dist/utils/markdown.d.ts",
+      "import": "./dist/utils/markdown.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n/index.d.ts",
+      "import": "./dist/i18n/index.js",
+      "default": "./dist/i18n/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo skip",
+    "test": "node --experimental-strip-types test/smoke.ts && node --experimental-strip-types test/agent.ts && node --experimental-strip-types test/adapters.ts && node --experimental-strip-types test/stream-toolcalls.ts && node --experimental-strip-types test/responses-api.ts && node --experimental-strip-types test/skill.ts && node --experimental-strip-types test/mcp.ts && node --experimental-strip-types test/integration.ts && node --experimental-strip-types test/advanced.ts && node --experimental-strip-types test/suite-a.ts && node --experimental-strip-types test/suite-e.ts && node --experimental-strip-types test/markdown.ts && node --experimental-strip-types test/dedup.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "diff": "^5.2.0",
+    "fast-glob": "^3.3.2",
+    "nanoid": "^5.0.7",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/diff": "^5.2.0"
+  }
+}

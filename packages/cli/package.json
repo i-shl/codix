@@ -1,0 +1,31 @@
+{
+  "name": "@codix/cli",
+  "version": "0.1.0",
+  "description": "codix CLI - interactive AI agent terminal.",
+  "type": "module",
+  "bin": {
+    "codix": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --experimental-strip-types test/tui.ts && node --experimental-strip-types test/e2e.ts",
+    "test:tui": "node --experimental-strip-types test/tui.ts",
+    "test:e2e": "node --experimental-strip-types test/e2e.ts",
+    "lint": "echo skip"
+  },
+  "dependencies": {
+    "@codix/core": "file:../core",
+    "meow": "^13.2.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.5"
+  }
+}

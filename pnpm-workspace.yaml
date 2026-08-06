@@ -1,0 +1,24 @@
+packages:
+  - 'packages/*'
+
+allowBuilds:
+  electron: true
+  esbuild: true
+
+onlyBuiltDependencies:
+  - electron
+  - esbuild
+  - '@parcel/watcher'
+  - '@swc/core'
+  - 'better-sqlite3'
+  - '@tailwindcss/oxide'
+  - 'sharp'
+  - 'unrs-resolver'
+
+autoInstallPeers: true
+strictPeerDependencies: false
+shamefullyHoist: false
+nodeLinker: isolated
+enablePrePostScripts: true
+publicHoistPattern:
+  - '*'

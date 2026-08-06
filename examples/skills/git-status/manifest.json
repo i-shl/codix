@@ -1,0 +1,21 @@
+{
+  "name": "git-status",
+  "version": "0.1.0",
+  "description": "查看 git 仓库状态、差异、提交历史",
+  "author": "codix",
+  "prompt": "你擅长用 git 命令帮助用户管理代码仓库。",
+  "tools": [
+    {
+      "name": "git_log",
+      "description": "显示 git 提交历史",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "limit": { "type": "integer", "description": "显示条数", "default": 10 }
+        },
+        "required": []
+      },
+      "entry": "./tools/git-log.js"
+    }
+  ]
+}

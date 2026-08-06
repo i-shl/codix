@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./renderer",
+    "outDir": "./dist-renderer",
+    "jsx": "preserve",
+    "types": ["node", "vite/client"],
+    "composite": false,
+    "noEmit": true,
+    "tsBuildInfoFile": "./.tsbuildinfo-renderer"
+  },
+  "include": ["renderer/src/**/*", "renderer/src/**/*.vue", "renderer/index.html"],
+  "exclude": ["node_modules", "dist", "dist-electron", "dist-renderer", "electron"]
+}
