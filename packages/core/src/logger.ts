@@ -44,10 +44,10 @@ class ConsoleTransport implements LogTransport {
  * 判断是否应该静音。
  * - TTY 模式（Ink 渲染中）：默认只放行 warn/error，避免污染用户屏幕
  * - 非 TTY（脚本/管道）：保留 info，便于调试
- * - 显式设置 CODIX_LOG_LEVEL 时按显式值来
+ * - 显式设置 voked_LOG_LEVEL 时按显式值来
  */
 function resolveDefaultLevel(): LogLevel {
-  const env = process.env.CODIX_LOG_LEVEL as LogLevel | undefined;
+  const env = process.env.voked_LOG_LEVEL as LogLevel | undefined;
   if (env && ['debug', 'info', 'warn', 'error'].includes(env)) return env;
   if (process.stdout.isTTY) return 'warn';
   return 'info';
@@ -55,7 +55,7 @@ function resolveDefaultLevel(): LogLevel {
 
 function resolveStream(): { write(chunk: string): boolean | void } {
   // 支持把日志重定向到文件，避免出现在 TTY 屏幕上
-  const file = process.env.CODIX_LOG_FILE;
+  const file = process.env.voked_LOG_FILE;
   if (file) {
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -78,7 +78,7 @@ export class Logger {
 
   static setDefaultLevel(level: LogLevel): void {
     // 简单实现：每次构造都从 env 读
-    process.env.CODIX_LOG_LEVEL = level;
+    process.env.voked_LOG_LEVEL = level;
   }
 
   child(scope: string): Logger {

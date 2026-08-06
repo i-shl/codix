@@ -1,5 +1,5 @@
 /**
- * @codix/core 主入口
+ * @voked/core 主入口
  */
 export * from './types.js';
 export * from './errors.js';

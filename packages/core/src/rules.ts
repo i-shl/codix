@@ -2,15 +2,15 @@
  * 全局规则加载
  *
  * 加载顺序（后置覆盖前者）：
- *   1. ~/.codix/rules.md       (全局)
- *   2. <project>/.codix/rules.md  (项目级)
- *   3. <project>/CODIX.md      (项目级，类 CLAUDE.md)
+ *   1. ~/.voked/rules.md       (全局)
+ *   2. <project>/.voked/rules.md  (项目级)
+ *   3. <project>/voked.md      (项目级，类 CLAUDE.md)
  *   4. <project>/AGENTS.md         (项目级)
  *
  * 规则会被注入到 system prompt。
  */
 import path from 'node:path';
-import { CODIX_HOME, fileExists, readFileText } from './utils/fs.js';
+import { voked_HOME, fileExists, readFileText } from './utils/fs.js';
 
 export interface LoadedRules {
   sources: { path: string; content: string }[];
@@ -19,9 +19,9 @@ export interface LoadedRules {
 
 export async function loadRules(cwd: string): Promise<LoadedRules> {
   const candidates: string[] = [
-    path.join(CODIX_HOME, 'rules.md'),
-    path.join(cwd, '.codix', 'rules.md'),
-    path.join(cwd, 'CODIX.md'),
+    path.join(voked_HOME, 'rules.md'),
+    path.join(cwd, '.voked', 'rules.md'),
+    path.join(cwd, 'voked.md'),
     path.join(cwd, 'AGENTS.md'),
   ];
   const sources: { path: string; content: string }[] = [];

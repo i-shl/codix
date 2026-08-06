@@ -1,16 +1,16 @@
 [中文](./README.zh-CN.md) | [English](./README.md)
 
-# @codix/desktop
+# @voked/desktop
 
-codix 的桌面端：基于 **Electron + Vue 3 + Vite** 的 AI Agent 客户端。
+voked 的桌面端：基于 **Electron + Vue 3 + Vite** 的 AI Agent 客户端。
 
-底层复用 `@codix/core` 核心引擎，与 CLI 共享同一套工具 / 模型 / MCP / Skill 能力。
+底层复用 `@voked/core` 核心引擎，与 CLI 共享同一套工具 / 模型 / MCP / Skill 能力。
 
 ## 支持的平台
 
 | 平台 | 安装包格式 | 打包命令 |
 |---|---|---|
-| Windows | NSIS `.exe`（`codix-Setup-x.y.z.exe`） | `pnpm package:desktop:win` |
+| Windows | NSIS `.exe`（`voked-Setup-x.y.z.exe`） | `pnpm package:desktop:win` |
 | macOS | `.dmg` | `pnpm package:desktop:mac` |
 | Linux | `.AppImage` / `.deb` | `pnpm package:desktop:linux` |
 
@@ -20,8 +20,8 @@ codix 的桌面端：基于 **Electron + Vue 3 + Vite** 的 AI Agent 客户端�
 ## 一、从源码运行 / 开发（pnpm）
 
 ```bash
-git clone https://github.com/i-shl/codix.git
-cd codix
+git clone https://github.com/i-shl/voked.git
+cd voked
 pnpm install
 pnpm build:desktop        # 先构建渲染层 + 主进程
 ```
@@ -74,14 +74,14 @@ electron-builder 配置见本目录 `package.json` 的 `build` 字段；`after-p
 ## 四、测试
 
 ```bash
-pnpm --filter @codix/desktop test   # 消息队列单元测试
-pnpm --filter @codix/desktop typecheck
+pnpm --filter @voked/desktop test   # 消息队列单元测试
+pnpm --filter @voked/desktop typecheck
 ```
 
 ## 说明
 
-桌面端与 CLI 的模型 / MCP / Skill 配置共用 `~/.codix/config.json`（首次用 CLI 的 `--config` 初始化即可，桌面端也能读取）。
+桌面端与 CLI 的模型 / MCP / Skill 配置共用 `~/.voked/config.json`（首次用 CLI 的 `--config` 初始化即可，桌面端也能读取）。
 
 ## 关于本项目
 
-codix 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成。
+voked 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成。

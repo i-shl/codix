@@ -55,7 +55,7 @@ export async function createAgentContext(
   const defaultKey = opts.modelKey ?? config.defaultModel ?? Object.keys(config.models)[0];
   if (!defaultKey || !config.models[defaultKey]) {
     throw new Error(
-      '没有配置模型。请先在 ~/.codix/config.json 中配置 models，或设置环境变量 CODIX_API_KEY + CODIX_MODEL'
+      '没有配置模型。请先在 ~/.voked/config.json 中配置 models，或设置环境变量 voked_API_KEY + voked_MODEL'
     );
   }
   const modelCfg = resolveModelConfig(config.models[defaultKey], config.providers);
@@ -87,7 +87,7 @@ export async function createAgentContext(
 
   const systemPrompt = buildSystemPrompt({
     identity:
-      "You are codix, an AI coding assistant that can read/write/edit files, run shell commands, search the web, and use tools. Be concise. Use tools to answer questions when needed. " +
+      "You are voked, an AI coding assistant that can read/write/edit files, run shell commands, search the web, and use tools. Be concise. Use tools to answer questions when needed. " +
       "You are NOT confined to any directory. The filesystem tools accept ABSOLUTE paths to ANY location on this machine " +
       "(for example C:\\\\Users\\\\<user>\\\\Desktop, /Users/<user>, /tmp) — there is no sandbox and no cwd boundary. " +
       "The `cwd` shown in tool parameters is only a convenience default for RELATIVE paths. " +
@@ -261,4 +261,4 @@ export function rerunTurn(
 }
 
 export { AgentRunner, ContextCompressor, SessionManager };
-export type { AgentContext as codixContext };
+export type { AgentContext as vokedContext };

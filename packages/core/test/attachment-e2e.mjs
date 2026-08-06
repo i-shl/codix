@@ -6,10 +6,10 @@ import os from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs';
 
-const cwd = 'D:\\other\\codix';
+const cwd = 'D:\\other\\voked';
 const ctx = await createAgentContext(cwd);
 const session = await ctx.sessions.create({ cwd, title: 'attachment-e2e' });
-const fileData = Buffer.from('codix attachment test: 42 is the answer').toString('base64');
+const fileData = Buffer.from('voked attachment test: 42 is the answer').toString('base64');
 
 const handle = runAgent(
   ctx,
@@ -31,7 +31,7 @@ for (const m of result.messages) {
 }
 
 // 检查落盘文件
-const dir = path.join(os.tmpdir(), 'codix-attachments', session.id);
+const dir = path.join(os.tmpdir(), 'voked-attachments', session.id);
 console.log('=== 附件目录 ===');
 if (fs.existsSync(dir)) {
   for (const f of fs.readdirSync(dir)) {

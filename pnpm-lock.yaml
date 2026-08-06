@@ -7,6 +7,25 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.0.0
+        version: 1.30.0(supports-color@8.1.1)(zod@3.25.76)
+      diff:
+        specifier: ^5.2.0
+        version: 5.2.2
+      fast-glob:
+        specifier: ^3.3.2
+        version: 3.3.3
+      meow:
+        specifier: ^13.2.0
+        version: 13.2.0
+      nanoid:
+        specifier: ^5.0.7
+        version: 5.1.16
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -17,9 +36,9 @@ importers:
 
   packages/cli:
     dependencies:
-      '@codix/core':
+      '@voked/core':
         specifier: file:../core
-        version: file:packages/core(supports-color@8.1.1)
+        version: link:../core
       meow:
         specifier: ^13.2.0
         version: 13.2.0
@@ -55,7 +74,7 @@ importers:
 
   packages/desktop:
     dependencies:
-      '@codix/core':
+      '@voked/core':
         specifier: file:../core
         version: link:../core
       markstream-vue:
@@ -121,9 +140,6 @@ packages:
 
   '@chenglou/pretext@0.0.8':
     resolution: {integrity: sha512-yqm2GMxnPI7VHcHwe84P8ZF0JK/2d2DMKPqMN+s95jQhwDMYYXKVFVJUMEaVWckQStdsjdLav/0Vu+d9YbtGxA==}
-
-  '@codix/core@file:packages/core':
-    resolution: {directory: packages/core, type: directory}
 
   '@develar/schema-utils@2.6.5':
     resolution: {integrity: sha512-0cp4PsWQ/9avqTVMCtZ+GirikIA36ikvjtHweU4/j8yLtgObI0+JUPhYFScgwlteveGB1rt3Cm8UhN04XayDig==}
@@ -2300,17 +2316,6 @@ snapshots:
       '@babel/helper-validator-identifier': 7.29.7
 
   '@chenglou/pretext@0.0.8': {}
-
-  '@codix/core@file:packages/core(supports-color@8.1.1)':
-    dependencies:
-      '@modelcontextprotocol/sdk': 1.30.0(supports-color@8.1.1)(zod@3.25.76)
-      diff: 5.2.2
-      fast-glob: 3.3.3
-      nanoid: 5.1.16
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - '@cfworker/json-schema'
-      - supports-color
 
   '@develar/schema-utils@2.6.5':
     dependencies:

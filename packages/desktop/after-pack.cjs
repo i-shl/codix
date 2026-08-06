@@ -1,6 +1,6 @@
 /**
  * electron-builder afterPack 钩子
- * 把本地 workspace / file: 依赖（如 @codix/core）及其依赖
+ * 把本地 workspace / file: 依赖（如 @voked/core）及其依赖
  * 从 pnpm 隔离的 node_modules 复制到打包后的 app/node_modules，
  * 让打包后的 app 能解析所有 import。
  *
@@ -29,8 +29,8 @@ module.exports = async function afterPack(context) {
   for (const depName of localDeps) {
     // 解析本地包的真实目录
     let pkgDir;
-    if (depName.startsWith('@codix/')) {
-      pkgDir = path.join(root, '..', depName.replace('@codix/', '')); // packages/core
+    if (depName.startsWith('@voked/')) {
+      pkgDir = path.join(root, '..', depName.replace('@voked/', '')); // packages/core
     } else {
       pkgDir = path.join(root, '..', depName);
     }

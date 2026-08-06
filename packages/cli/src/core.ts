@@ -16,7 +16,7 @@ import {
   type AgentRunHandle,
 } from '../../core/dist/index.js';
 
-export type codixContext = AgentContext;
+export type vokedContext = AgentContext;
 export const createContext = _createContext;
 export const runAgent = _runAgent;
 export type { AgentRunOptions, AgentRunHandle };
@@ -26,7 +26,7 @@ export { SessionManager };
  * 就地换模型：只重建 adapter，不重建整个 context
  * （重建 context 会重连 MCP、重扫 skill，切个模型不值当）
  */
-export function applyModel(ctx: codixContext, key: string): void {
+export function applyModel(ctx: vokedContext, key: string): void {
   const raw = ctx.config.models[key];
   if (!raw) throw new Error(t('model.notFound', { key }));
   const cfg = resolveModelConfig(raw, ctx.config.providers);

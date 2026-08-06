@@ -28,7 +28,7 @@ export class McpManager {
     if (this.servers.has(cfg.name)) {
       await this.disconnect(cfg.name);
     }
-    const client = new Client({ name: 'codix', version: '0.1.0' }, { capabilities: {} });
+    const client = new Client({ name: 'voked', version: '0.1.0' }, { capabilities: {} });
     try {
       const transport = createTransport(cfg);
       await client.connect(transport);

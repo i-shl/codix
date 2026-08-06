@@ -12,7 +12,7 @@
  */
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { OpenAICompatibleAdapter } from '@codix/core';
+import { OpenAICompatibleAdapter } from '@voked/core';
 
 type Delta = Record<string, unknown>;
 

@@ -18,7 +18,7 @@ import {
   registerMcpTools,
   SkillManager,
   SkillInstaller,
-} from '@codix/core';
+} from '@voked/core';
 
 async function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
   return Promise.race([
@@ -30,7 +30,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise
 async function main(): Promise<void> {
   console.log('=== 集成测试 ===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-int-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-int-'));
   console.log('[setup] cwd:', cwd);
 
   // 1. Skill 准备
@@ -73,8 +73,8 @@ export default {
       },
     ],
   };
-  await fs.mkdir(path.join(cwd, '.codix'), { recursive: true });
-  await fs.writeFile(path.join(cwd, '.codix', 'config.json'), JSON.stringify(projectCfg, null, 2));
+  await fs.mkdir(path.join(cwd, '.voked'), { recursive: true });
+  await fs.writeFile(path.join(cwd, '.voked', 'config.json'), JSON.stringify(projectCfg, null, 2));
   const mergedCfg = await loadMergedConfig(cwd);
 
   // 3. 模型
@@ -99,11 +99,11 @@ export default {
 
   // 6. session + system
   const perm = new PermissionEngine(mergedCfg);
-  const sm = new SessionManager({ baseDir: path.join(cwd, '.codix', 'sessions') });
+  const sm = new SessionManager({ baseDir: path.join(cwd, '.voked', 'sessions') });
   const rules = await loadRules(cwd);
   const skillPrompts = await skills.collectPrompts(cwd);
   const systemPrompt = buildSystemPrompt({
-    identity: 'You are codix. Be concise.',
+    identity: 'You are voked. Be concise.',
     tools: tools.map((t) => `- ${t.schema.name}: ${t.schema.description}`).join('\n'),
     rules: rules.combined,
     skills: skillPrompts,

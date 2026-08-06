@@ -147,8 +147,8 @@ class CliSession {
         ...process.env,
         HOME: this.home,
         USERPROFILE: this.home,
-        CODIX_FORCE_TTY: '1',
-        CODIX_LOG_LEVEL: 'error',
+        voked_FORCE_TTY: '1',
+        voked_LOG_LEVEL: 'error',
         NO_COLOR: '1',
         COLUMNS: '80',
       },
@@ -240,10 +240,10 @@ async function test(name: string, fn: (home: string) => Promise<void>): Promise<
 }
 
 async function makeHome(mock: MockModel): Promise<string> {
-  const home = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-e2e-'));
-  await fs.mkdir(path.join(home, '.codix'), { recursive: true });
+  const home = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-e2e-'));
+  await fs.mkdir(path.join(home, '.voked'), { recursive: true });
   await fs.writeFile(
-    path.join(home, '.codix', 'config.json'),
+    path.join(home, '.voked', 'config.json'),
     JSON.stringify(
       {
         defaultModel: 'fast',
@@ -268,8 +268,8 @@ async function makeHome(mock: MockModel): Promise<string> {
 }
 
 async function makeProject(): Promise<string> {
-  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-proj-'));
-  await fs.writeFile(path.join(dir, 'hello.txt'), 'codix E2E 标记行\n第二行\n', 'utf8');
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-proj-'));
+  await fs.writeFile(path.join(dir, 'hello.txt'), 'voked E2E 标记行\n第二行\n', 'utf8');
   return dir;
 }
 
@@ -285,7 +285,7 @@ async function main(): Promise<void> {
     mock.script([]);
     const s = new CliSession(home, proj);
     s.start();
-    await s.waitFor('codix');
+    await s.waitFor('voked');
     await s.waitFor('mock-fast');
     await s.waitFor('个工具就绪');
     // 输入框边框（NO_COLOR 下仍是 Unicode 字形，因为不是 legacy conhost 判定）
@@ -319,7 +319,7 @@ async function main(): Promise<void> {
     await s.waitFor('个工具就绪');
     s.type('读一下 hello.txt');
     await s.waitFor('Read');
-    await s.waitFor('codix E2E 标记行');
+    await s.waitFor('voked E2E 标记行');
     await s.waitFor('文件读完了');
     await s.waitFor(/次工具/);
     s.type('/exit');
@@ -446,10 +446,10 @@ async function main(): Promise<void> {
     });
     await new Promise<void>((r) => slow.listen(0, '127.0.0.1', r));
     const port = (slow.address() as { port: number }).port;
-    const slowHome = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-slow-'));
-    await fs.mkdir(path.join(slowHome, '.codix'), { recursive: true });
+    const slowHome = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-slow-'));
+    await fs.mkdir(path.join(slowHome, '.voked'), { recursive: true });
     await fs.writeFile(
-      path.join(slowHome, '.codix', 'config.json'),
+      path.join(slowHome, '.voked', 'config.json'),
       JSON.stringify({
         defaultModel: 'slow',
         models: { slow: { provider: 'openai-compatible', model: 'slow', apiKey: 'x', baseURL: `http://127.0.0.1:${port}/v1` } },
@@ -560,10 +560,10 @@ async function main(): Promise<void> {
   });
 
   await test('没有模型配置时给出清晰错误并干净退出', async (home) => {
-    const emptyHome = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-empty-'));
-    await fs.mkdir(path.join(emptyHome, '.codix'), { recursive: true });
+    const emptyHome = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-empty-'));
+    await fs.mkdir(path.join(emptyHome, '.voked'), { recursive: true });
     await fs.writeFile(
-      path.join(emptyHome, '.codix', 'config.json'),
+      path.join(emptyHome, '.voked', 'config.json'),
       JSON.stringify({ models: {}, permissionRules: [], mcpServers: [] }),
       'utf8'
     );

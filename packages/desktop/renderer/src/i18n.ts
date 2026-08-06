@@ -1,5 +1,5 @@
 /**
- * 桌面端 i18n —— 在 `@codix/core/i18n` 之上包一层 Vue 响应式。
+ * 桌面端 i18n —— 在 `@voked/core/i18n` 之上包一层 Vue 响应式。
  *
  * core 的 `t()` 是纯函数，Vue 模板无法感知语言切换，所以这里用一个 ref
  * 做「版本号」：切换语言时 bump 一次，所有引用 `t()` 的计算属性/模板随之重算。
@@ -10,7 +10,7 @@ import {
   setLang as coreSetLang,
   getLang as coreGetLang,
   type Lang,
-} from '@codix/core/i18n';
+} from '@voked/core/i18n';
 
 export type { Lang };
 

@@ -19,7 +19,7 @@ import {
   AgentRunner,
   loadRules,
   buildSystemPrompt,
-} from '@codix/core';
+} from '@voked/core';
 import path from 'node:path';
 import os from 'node:os';
 
@@ -27,7 +27,7 @@ async function main(): Promise<void> {
   console.log('=== 端到端测试：真实模型 ===\n');
 
   // 临时 cwd
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-e2e-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-e2e-'));
   console.log('[setup] cwd:', cwd);
 
   // 1. 加载配置
@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   const perm = new PermissionEngine(cfg);
 
   // 5. Session manager
-  const sm = new SessionManager({ baseDir: path.join(cwd, '.codix', 'sessions') });
+  const sm = new SessionManager({ baseDir: path.join(cwd, '.voked', 'sessions') });
   const session = await sm.create({ cwd, title: 'e2e test' });
   console.log('[setup] session:', session.id);
 
@@ -59,7 +59,7 @@ async function main(): Promise<void> {
 
   // 7. system prompt
   const systemPrompt = buildSystemPrompt({
-    identity: 'You are codix, an AI coding assistant. Be concise. Reply in user\'s language.',
+    identity: 'You are voked, an AI coding assistant. Be concise. Reply in user\'s language.',
     tools: tools.map((t) => `- ${t.schema.name}: ${t.schema.description}`).join('\n'),
     rules: rules.combined,
   });
@@ -109,7 +109,7 @@ async function main(): Promise<void> {
   const targetFile = path.join(cwd, 'created-by-agent.md');
   const session5 = await sm.create({ cwd, title: 'write test' });
   runner = new AgentRunner({ model, tools, permission: perm, cwd, sessionId: session5.id, systemPrompt, maxSteps: 5 });
-  msgs = await runner.run({ messages: [], userInput: { text: `用 Write 工具在当前目录创建 created-by-agent.md，内容是 "# Created by Agent\\n\\nThis file was created by codix agent."` } });
+  msgs = await runner.run({ messages: [], userInput: { text: `用 Write 工具在当前目录创建 created-by-agent.md，内容是 "# Created by Agent\\n\\nThis file was created by voked agent."` } });
   for (const m of msgs) {
     if (m.toolCalls?.length) console.log('  → 调用工具:', m.toolCalls.map((t) => t.name).join(', '));
     if (m.toolResult) console.log('  ← 结果:', m.toolResult.content.slice(0, 200).replace(/\n/g, ' '));

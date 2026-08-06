@@ -94,7 +94,7 @@ async function walk(dir: string, out: string[], visited: Set<string>): Promise<v
   visited.add(real);
   const entries = await fs.readdir(dir, { withFileTypes: true });
   for (const e of entries) {
-    if (e.name === 'node_modules' || e.name === '.git' || e.name === '.codix') continue;
+    if (e.name === 'node_modules' || e.name === '.git' || e.name === '.voked') continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) await walk(p, out, visited);
     else out.push(p);

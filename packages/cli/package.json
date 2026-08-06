@@ -1,10 +1,10 @@
 {
-  "name": "@codix/cli",
+  "name": "@voked/cli",
   "version": "0.1.0",
-  "description": "codix CLI - interactive AI agent terminal.",
+  "description": "voked CLI - interactive AI agent terminal.",
   "type": "module",
   "bin": {
-    "codix": "./dist/index.js"
+    "voked": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "exports": {
@@ -21,7 +21,7 @@
     "lint": "echo skip"
   },
   "dependencies": {
-    "@codix/core": "file:../core",
+    "@voked/core": "file:../core",
     "meow": "^13.2.0"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 /**
  * 端到端测试 - 用 mock 模型验证 Agent 循环
  */
-import { AgentRunner, type ModelAdapter, type ModelConfig, type ChatRequest, type ChatResponse, type StreamEvent, PermissionEngine, BaseTool, jsonSchema, ToolRegistry } from '@codix/core';
+import { AgentRunner, type ModelAdapter, type ModelConfig, type ChatRequest, type ChatResponse, type StreamEvent, PermissionEngine, BaseTool, jsonSchema, ToolRegistry } from '@voked/core';
 
 class MockAdapter implements ModelAdapter {
   readonly config: ModelConfig = { provider: 'openai-compatible', model: 'mock' };

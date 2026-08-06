@@ -15,7 +15,7 @@ import { spawn } from 'node:child_process';
 import { ToolRegistry } from '../tools/registry.js';
 import type { SkillManager } from './manager.js';
 import { parseFrontmatter } from './manager.js';
-import { ensureDir, fileExists, isPathInside, readFileText, writeFileAtomic, CODIX_HOME } from '../utils/fs.js';
+import { ensureDir, fileExists, isPathInside, readFileText, writeFileAtomic, voked_HOME } from '../utils/fs.js';
 import { SkillError } from '../errors.js';
 import { getLogger } from '../logger.js';
 import { DEFAULT_SKILLS } from './defaults.js';
@@ -30,7 +30,7 @@ export class SkillInstaller {
   async install(source: string, opts: { scope?: SkillInstallScope; cwd?: string } = {}): Promise<string> {
     const scope = opts.scope ?? 'global';
     const cwd = opts.cwd ?? process.cwd();
-    const installRoot = scope === 'global' ? path.join(CODIX_HOME, 'skills') : path.join(cwd, '.codix', 'skills');
+    const installRoot = scope === 'global' ? path.join(voked_HOME, 'skills') : path.join(cwd, '.voked', 'skills');
     await ensureDir(installRoot);
 
     let sourcePath: string;
@@ -40,7 +40,7 @@ export class SkillInstaller {
       skillName = path.basename(sourcePath);
     } else if (source.startsWith('npm:')) {
       const pkg = source.slice('npm:'.length);
-      const tmp = path.join(CODIX_HOME, '.cache', 'npm-' + Date.now());
+      const tmp = path.join(voked_HOME, '.cache', 'npm-' + Date.now());
       await ensureDir(tmp);
       await runCmd('npm', ['pack', pkg], tmp);
       const tarball = (await fs.readdir(tmp)).find((f) => f.endsWith('.tgz'));
@@ -52,7 +52,7 @@ export class SkillInstaller {
       skillName = await inferName(sourcePath, pkg);
     } else if (source.startsWith('git:')) {
       const repo = source.slice('git:'.length);
-      const tmp = path.join(CODIX_HOME, '.cache', 'git-' + Date.now());
+      const tmp = path.join(voked_HOME, '.cache', 'git-' + Date.now());
       await ensureDir(tmp);
       await runCmd('git', ['clone', '--depth=1', repo, tmp], tmp);
       sourcePath = tmp;
@@ -65,7 +65,7 @@ export class SkillInstaller {
       const url = source.startsWith('tarball:') ? source.slice('tarball:'.length) : source;
       // 下载大小上限 50MB，防止恶意 URL 触发 OOM
       const MAX_DOWNLOAD = 50 * 1024 * 1024;
-      const tmp = path.join(CODIX_HOME, '.cache', 'dl-' + Date.now() + '.tgz');
+      const tmp = path.join(voked_HOME, '.cache', 'dl-' + Date.now() + '.tgz');
       await ensureDir(path.dirname(tmp));
       const res = await fetch(url);
       if (!res.ok) throw new SkillError(`下载失败 HTTP ${res.status}`);
@@ -74,7 +74,7 @@ export class SkillInstaller {
       const buf = Buffer.from(await res.arrayBuffer());
       if (buf.length > MAX_DOWNLOAD) throw new SkillError(`下载内容超过 ${MAX_DOWNLOAD} 限制`);
       await fs.writeFile(tmp, buf);
-      const skillDir = path.join(CODIX_HOME, '.cache', 'extract-' + Date.now());
+      const skillDir = path.join(voked_HOME, '.cache', 'extract-' + Date.now());
       await ensureDir(skillDir);
       // 显式指定 --no-absolute-names / -P 默认是禁用的，但为防 -C 解析不到时穿越父目录，再用 strip-components 限制
       await runCmd('tar', ['-xzf', tmp, '-C', skillDir, '--strip-components=0'], path.dirname(tmp));
@@ -114,7 +114,7 @@ export class SkillInstaller {
   async uninstall(name: string, opts: { scope?: SkillInstallScope; cwd?: string } = {}): Promise<void> {
     const scope = opts.scope ?? 'global';
     const cwd = opts.cwd ?? process.cwd();
-    const installRoot = scope === 'global' ? path.join(CODIX_HOME, 'skills') : path.join(cwd, '.codix', 'skills');
+    const installRoot = scope === 'global' ? path.join(voked_HOME, 'skills') : path.join(cwd, '.voked', 'skills');
     const target = path.join(installRoot, name);
     await fs.rm(target, { recursive: true, force: true });
   }
@@ -122,10 +122,10 @@ export class SkillInstaller {
 
 /**
  * 首次运行时自动安装默认推荐 skill（如 find-skills）。
- * 已存在则跳过；失败仅告警（不阻断启动）。全局安装到 ~/.codix/skills。
+ * 已存在则跳过；失败仅告警（不阻断启动）。全局安装到 ~/.voked/skills。
  */
 export async function ensureDefaultSkills(installer: SkillInstaller): Promise<void> {
-  const globalRoot = path.join(CODIX_HOME, 'skills');
+  const globalRoot = path.join(voked_HOME, 'skills');
   for (const s of DEFAULT_SKILLS) {
     const dest = path.join(globalRoot, s.name);
     if (
@@ -215,7 +215,7 @@ export function parseRepoSkillUrl(source: string): RepoRef {
 async function downloadRepoSkill(source: string): Promise<{ dir: string; fallbackName: string }> {
   const ref = parseRepoSkillUrl(source);
   const branches = ref.branch ? [ref.branch] : ['main', 'master'];
-  const workRoot = path.join(CODIX_HOME, '.cache', 'repo-' + Date.now());
+  const workRoot = path.join(voked_HOME, '.cache', 'repo-' + Date.now());
   await ensureDir(workRoot);
 
   let lastErr: Error | null = null;

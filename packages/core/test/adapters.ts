@@ -1,8 +1,8 @@
 /**
  * 模型适配器测试 - 验证请求序列化正确（不实际调用 API）
  */
-import { OpenAICompatibleAdapter, AnthropicAdapter, GeminiAdapter } from '@codix/core';
-import type { Message } from '@codix/core';
+import { OpenAICompatibleAdapter, AnthropicAdapter, GeminiAdapter } from '@voked/core';
+import type { Message } from '@voked/core';
 
 async function main(): Promise<void> {
   console.log('=== Model Adapter Tests ===\n');

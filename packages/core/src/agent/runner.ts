@@ -290,7 +290,7 @@ function describeTool(name: string, input: Record<string, unknown>): string {
 
 /** 把用户上传的附件 base64 落盘到临时目录，返回绝对路径（供模型用 Read 读取） */
 async function saveAttachment(sessionId: string, f: { fileName: string; data: string }): Promise<string> {
-  const dir = path.join(os.tmpdir(), 'codix-attachments', sessionId);
+  const dir = path.join(os.tmpdir(), 'voked-attachments', sessionId);
   await fs.mkdir(dir, { recursive: true });
   const base = path.basename(f.fileName).replace(/[\\/:*?"<>|\x00-\x1f]/g, '_') || 'file';
   let target = path.join(dir, base);

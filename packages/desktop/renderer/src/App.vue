@@ -86,17 +86,17 @@ function buildUserMessage(input: PendingInput): Message {
 
 watch(theme, (v) => {
   document.documentElement.dataset.theme = v;
-  localStorage.setItem('codix:theme', v);
+  localStorage.setItem('voked:theme', v);
 }, { immediate: true });
 
 async function refreshSessions(): Promise<void> {
   if (!cwd.value) return;
-  sessions.value = (await window.codix.listSessions(cwd.value)) as Session[];
+  sessions.value = (await window.voked.listSessions(cwd.value)) as Session[];
 }
 
 async function createNewSession(title?: string): Promise<void> {
   if (!cwd.value) return;
-  const s = (await window.codix.createSession({ cwd: cwd.value, title })) as Session;
+  const s = (await window.voked.createSession({ cwd: cwd.value, title })) as Session;
   await refreshSessions();
   await loadSession(s.id);
 }
@@ -113,7 +113,7 @@ function clear(): void {
 
 async function loadSession(id: string): Promise<void> {
   if (!cwd.value) return;
-  const s = (await window.codix.loadSession(id)) as Session & { messages: Message[] };
+  const s = (await window.voked.loadSession(id)) as Session & { messages: Message[] };
   if (s) {
     currentSession.value = {
       id: s.id,
@@ -130,7 +130,7 @@ async function loadSession(id: string): Promise<void> {
 }
 
 async function deleteSession(id: string): Promise<void> {
-  await window.codix.deleteSession(id);
+  await window.voked.deleteSession(id);
   if (currentSession.value?.id === id) {
     currentSession.value = null;
     messages.value = [];
@@ -143,7 +143,7 @@ async function afterTurn(): Promise<void> {
   const cs = currentSession.value;
   if (!cs) return;
   try {
-    const s = (await window.codix.loadSession(cs.id)) as Session & { messages: Message[] };
+    const s = (await window.voked.loadSession(cs.id)) as Session & { messages: Message[] };
     messages.value = s.messages ?? [];
     currentSession.value = {
       ...cs,
@@ -158,7 +158,7 @@ async function afterTurn(): Promise<void> {
 async function ensureSession(): Promise<boolean> {
   if (currentSession.value) return true;
   if (!cwd.value) return false;
-  const s = (await window.codix.createSession({ cwd: cwd.value })) as Session;
+  const s = (await window.voked.createSession({ cwd: cwd.value })) as Session;
   await refreshSessions();
   await loadSession(s.id);
   return true;
@@ -182,7 +182,7 @@ async function runTurn(input: PendingInput): Promise<void> {
         if (input.rerun!.text !== undefined) kept[idx].content = input.rerun!.text as Message['content'];
         messages.value = kept;
       }
-      await window.codix.rerunTurn({
+      await window.voked.rerunTurn({
         cwd: cwd.value,
         sessionId: sid,
         userMessageId: input.rerun!.userMessageId,
@@ -192,7 +192,7 @@ async function runTurn(input: PendingInput): Promise<void> {
       if (input.text || input.images?.length || input.files?.length) {
         messages.value = [...messages.value, buildUserMessage(input)];
       }
-      await window.codix.run({ cwd: cwd.value, sessionId: sid, userInput: input });
+      await window.voked.run({ cwd: cwd.value, sessionId: sid, userInput: input });
     }
     await afterTurn();
   } finally {
@@ -246,7 +246,7 @@ function onAsk(req: unknown): void {
 
 function onPermissionChoice(choice: 'allow' | 'deny' | 'allowAll'): void {
   pendingAsk.value = null;
-  window.codix.respondAsk(choice);
+  window.voked.respondAsk(choice);
 }
 
 function editMessage(msg: Message): void {
@@ -277,7 +277,7 @@ function toggleTheme(): void {
 
 async function refreshModelList(): Promise<void> {
   try {
-    const cfg = (await window.codix.loadGlobalConfig()) as GlobalConfig;
+    const cfg = (await window.voked.loadGlobalConfig()) as GlobalConfig;
     const models = cfg.models ?? {};
     const defaultKey = cfg.defaultModel ?? '';
     availableModels.value = Object.entries(models).map(([key, m]) => ({
@@ -297,9 +297,9 @@ async function refreshModelList(): Promise<void> {
 async function pickModel(key: string): Promise<void> {
   showModelPicker.value = false;
   try {
-    const cfg = (await window.codix.loadGlobalConfig()) as GlobalConfig;
+    const cfg = (await window.voked.loadGlobalConfig()) as GlobalConfig;
     cfg.defaultModel = key;
-    await window.codix.saveGlobalConfig(cfg);
+    await window.voked.saveGlobalConfig(cfg);
     await refreshModelList();
   } catch (e) {
     flashError(t('ui.modelSwitchFailed') + errMsg(e));
@@ -308,23 +308,23 @@ async function pickModel(key: string): Promise<void> {
 
 onMounted(async () => {
   // 语言：优先读 localStorage（切换后立即生效、无需等 IPC），再回退到全局配置
-  setLang(localStorage.getItem('codix:lang') ?? 'zh');
+  setLang(localStorage.getItem('voked:lang') ?? 'zh');
   try {
-    homeDir.value = await window.codix.homeDir();
+    homeDir.value = await window.voked.homeDir();
   } catch { /* ignore */ }
-  const stored = localStorage.getItem('codix:cwd');
+  const stored = localStorage.getItem('voked:cwd');
   cwd.value = stored ?? homeDir.value ?? '';
-  if (!localStorage.getItem('codix:lang')) {
+  if (!localStorage.getItem('voked:lang')) {
     try {
-      const cfg = (await window.codix.loadGlobalConfig()) as GlobalConfig;
+      const cfg = (await window.voked.loadGlobalConfig()) as GlobalConfig;
       const l = (cfg.ui as { language?: string } | undefined)?.language;
       if (l) setLang(l);
     } catch { /* 配置读不到就用默认中文 */ }
   }
   await refreshModelList();
   await refreshSessions();
-  const offEvent = window.codix.onEvent(onEvent);
-  const offAsk = window.codix.onAsk(onAsk);
+  const offEvent = window.voked.onEvent(onEvent);
+  const offAsk = window.voked.onAsk(onAsk);
   onUnmounted(() => {
     offEvent();
     offAsk();

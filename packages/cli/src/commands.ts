@@ -10,7 +10,7 @@ import fs from 'node:fs/promises';
 import { existsSync, readFileSync, mkdirSync, appendFileSync } from 'node:fs';
 import type { GlobalConfig, ModelConfig } from '../../core/dist/index.js';
 import { t } from '../../core/dist/index.js';
-import type { codixContext } from './core.js';
+import type { vokedContext } from './core.js';
 
 // ============== 注册表 ==============
 
@@ -64,7 +64,7 @@ export function findCommand(name: string): SlashCommand | undefined {
 
 // ============== 历史持久化 ==============
 
-const HISTORY_PATH = path.join(os.homedir(), '.codix', 'history');
+const HISTORY_PATH = path.join(os.homedir(), '.voked', 'history');
 const HISTORY_MAX = 500;
 
 export function loadHistory(): string[] {
@@ -137,7 +137,7 @@ export function buildModelRows(config: GlobalConfig): ModelRow[] {
 // ============== 分发 ==============
 
 export interface SlashContext {
-  ctx: codixContext;
+  ctx: vokedContext;
   sessionId: string;
   setModel: (key: string) => Promise<string>;
   newSession: (title?: string) => Promise<string>;
@@ -267,7 +267,7 @@ export async function handleSlash(line: string, sc: SlashContext): Promise<Slash
     }
 
     case 'rules': {
-      const p = path.join(os.homedir(), '.codix', 'rules.md');
+      const p = path.join(os.homedir(), '.voked', 'rules.md');
       try {
         const txt = await fs.readFile(p, 'utf8');
         return { message: `${p}\n\n${txt}` };
@@ -278,7 +278,7 @@ export async function handleSlash(line: string, sc: SlashContext): Promise<Slash
 
     case 'config': {
       if (rest[0] === 'path') {
-        return { message: t('config.path', { p: path.join(os.homedir(), '.codix', 'config.json') }) };
+        return { message: t('config.path', { p: path.join(os.homedir(), '.voked', 'config.json') }) };
       }
       const safe = JSON.parse(JSON.stringify(sc.ctx.config)) as GlobalConfig;
       for (const m of Object.values(safe.models ?? {})) if (m.apiKey) m.apiKey = '***';

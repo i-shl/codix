@@ -10,7 +10,7 @@ let currentAbort: (() => void) | null = null;
 let currentCtx: any = null;
 
 // dev 模式：用 NODE_ENV 或 explicit dev arg 判定
-const isDev: boolean = process.env.CODIX_DEV === 'true' || process.argv.includes('--dev');
+const isDev: boolean = process.env.voked_DEV === 'true' || process.argv.includes('--dev');
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -18,7 +18,7 @@ function createWindow(): void {
     height: 820,
     minWidth: 900,
     minHeight: 600,
-    title: 'codix',
+    title: 'voked',
     backgroundColor: '#0f1115',
     show: true,
     webPreferences: {
@@ -48,7 +48,7 @@ function createWindow(): void {
 }
 
 function buildMenu(): void {
-  // codix 不在窗口顶部显示原生菜单栏 — UI 已自包含。
+  // voked 不在窗口顶部显示原生菜单栏 — UI 已自包含。
   // 仅保留一个空模板，避免 macOS 默认菜单出现。
   const template: any[] = [];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
@@ -84,10 +84,10 @@ ipcMain.handle('shell:openPath', async (_e: any, p: string): Promise<string> => 
 // 强制 dynamic import (绕过 CJS 编译降级)
 const esmImport = new Function('s', 'return import(s)') as <T = unknown>(s: string) => Promise<T>;
 async function core(): Promise<any> {
-  return await esmImport('@codix/core');
+  return await esmImport('@voked/core');
 }
 
-ipcMain.handle('codix:run', async (_e: any, args: { cwd: string; sessionId: string; userInput: any }): Promise<{ ok: boolean }> => {
+ipcMain.handle('voked:run', async (_e: any, args: { cwd: string; sessionId: string; userInput: any }): Promise<{ ok: boolean }> => {
   const { createAgentContext, runAgent } = await core();
   const ctx = await createAgentContext(args.cwd);
   currentCtx = ctx;
@@ -95,20 +95,20 @@ ipcMain.handle('codix:run', async (_e: any, args: { cwd: string; sessionId: stri
     onEvent: (ev: any) => {
       if (!mainWindow) return;
       if (ev.type === 'text_delta') {
-        mainWindow.webContents.send('codix:event', { type: 'text_delta', text: ev.text });
+        mainWindow.webContents.send('voked:event', { type: 'text_delta', text: ev.text });
       } else if (ev.type === 'thinking_delta') {
-        mainWindow.webContents.send('codix:event', { type: 'thinking_delta', text: ev.text });
+        mainWindow.webContents.send('voked:event', { type: 'thinking_delta', text: ev.text });
       } else if (ev.type === 'tool_use_start') {
-        mainWindow.webContents.send('codix:event', { type: 'tool_start', id: ev.id, name: ev.name });
+        mainWindow.webContents.send('voked:event', { type: 'tool_start', id: ev.id, name: ev.name });
       } else if (ev.type === 'tool_use_end') {
-        mainWindow.webContents.send('codix:event', { type: 'tool_end', id: ev.id, input: ev.input });
+        mainWindow.webContents.send('voked:event', { type: 'tool_end', id: ev.id, input: ev.input });
       } else if (ev.type === 'finish') {
-        mainWindow.webContents.send('codix:event', { type: 'finish', reason: ev.reason });
+        mainWindow.webContents.send('voked:event', { type: 'finish', reason: ev.reason });
       }
     },
     onToolEnd: (call: any, res: any): void => {
       if (!mainWindow) return;
-      mainWindow.webContents.send('codix:event', { type: 'tool_result', id: call.id, result: res });
+      mainWindow.webContents.send('voked:event', { type: 'tool_result', id: call.id, result: res });
     },
     onPermissionAsk: (req: any): Promise<'allow' | 'deny' | 'allowAll'> => {
       return new Promise((resolve) => {
@@ -118,7 +118,7 @@ ipcMain.handle('codix:run', async (_e: any, args: { cwd: string; sessionId: stri
           pendingAskResolver = null;
         }
         pendingAskResolver = resolve;
-        mainWindow?.webContents.send('codix:ask', req);
+        mainWindow?.webContents.send('voked:ask', req);
       });
     },
   });
@@ -132,7 +132,7 @@ ipcMain.handle('codix:run', async (_e: any, args: { cwd: string; sessionId: stri
   return { ok: true };
 });
 
-ipcMain.handle('codix:rerunTurn', async (_e: any, args: { cwd: string; sessionId: string; userMessageId: string; text?: string }): Promise<{ ok: boolean }> => {
+ipcMain.handle('voked:rerunTurn', async (_e: any, args: { cwd: string; sessionId: string; userMessageId: string; text?: string }): Promise<{ ok: boolean }> => {
   const { createAgentContext, rerunTurn } = await core();
   const ctx = await createAgentContext(args.cwd);
   currentCtx = ctx;
@@ -140,20 +140,20 @@ ipcMain.handle('codix:rerunTurn', async (_e: any, args: { cwd: string; sessionId
     onEvent: (ev: any) => {
       if (!mainWindow) return;
       if (ev.type === 'text_delta') {
-        mainWindow.webContents.send('codix:event', { type: 'text_delta', text: ev.text });
+        mainWindow.webContents.send('voked:event', { type: 'text_delta', text: ev.text });
       } else if (ev.type === 'thinking_delta') {
-        mainWindow.webContents.send('codix:event', { type: 'thinking_delta', text: ev.text });
+        mainWindow.webContents.send('voked:event', { type: 'thinking_delta', text: ev.text });
       } else if (ev.type === 'tool_use_start') {
-        mainWindow.webContents.send('codix:event', { type: 'tool_start', id: ev.id, name: ev.name });
+        mainWindow.webContents.send('voked:event', { type: 'tool_start', id: ev.id, name: ev.name });
       } else if (ev.type === 'tool_use_end') {
-        mainWindow.webContents.send('codix:event', { type: 'tool_end', id: ev.id, input: ev.input });
+        mainWindow.webContents.send('voked:event', { type: 'tool_end', id: ev.id, input: ev.input });
       } else if (ev.type === 'finish') {
-        mainWindow.webContents.send('codix:event', { type: 'finish', reason: ev.reason });
+        mainWindow.webContents.send('voked:event', { type: 'finish', reason: ev.reason });
       }
     },
     onToolEnd: (call: any, res: any): void => {
       if (!mainWindow) return;
-      mainWindow.webContents.send('codix:event', { type: 'tool_result', id: call.id, result: res });
+      mainWindow.webContents.send('voked:event', { type: 'tool_result', id: call.id, result: res });
     },
     onPermissionAsk: (req: any): Promise<'allow' | 'deny' | 'allowAll'> => {
       return new Promise((resolve) => {
@@ -162,7 +162,7 @@ ipcMain.handle('codix:rerunTurn', async (_e: any, args: { cwd: string; sessionId
           pendingAskResolver = null;
         }
         pendingAskResolver = resolve;
-        mainWindow?.webContents.send('codix:ask', req);
+        mainWindow?.webContents.send('voked:ask', req);
       });
     },
   }, args.text);
@@ -176,58 +176,58 @@ ipcMain.handle('codix:rerunTurn', async (_e: any, args: { cwd: string; sessionId
   return { ok: true };
 });
 
-ipcMain.handle('codix:abort', async (): Promise<{ ok: boolean }> => {
+ipcMain.handle('voked:abort', async (): Promise<{ ok: boolean }> => {
   if (currentAbort) currentAbort();
   return { ok: true };
 });
 
-ipcMain.handle('codix:listSessions', async (_e: any, cwd: string): Promise<any[]> => {
+ipcMain.handle('voked:listSessions', async (_e: any, cwd: string): Promise<any[]> => {
   const { SessionManager } = await core();
-  return new SessionManager({ baseDir: path.join(cwd, '.codix', 'sessions') }).list();
+  return new SessionManager({ baseDir: path.join(cwd, '.voked', 'sessions') }).list();
 });
 
-ipcMain.handle('codix:createSession', async (_e: any, opts: { cwd: string; title?: string }): Promise<any> => {
+ipcMain.handle('voked:createSession', async (_e: any, opts: { cwd: string; title?: string }): Promise<any> => {
   const { SessionManager } = await core();
-  const sm = new SessionManager({ baseDir: path.join(opts.cwd, '.codix', 'sessions') });
+  const sm = new SessionManager({ baseDir: path.join(opts.cwd, '.voked', 'sessions') });
   return await sm.create({ cwd: opts.cwd, title: opts.title, model: undefined });
 });
 
-ipcMain.handle('codix:loadSession', async (_e: any, id: string): Promise<any> => {
+ipcMain.handle('voked:loadSession', async (_e: any, id: string): Promise<any> => {
   const { SessionManager } = await core();
   return new SessionManager().load(id);
 });
 
-ipcMain.handle('codix:deleteSession', async (_e: any, id: string): Promise<void> => {
+ipcMain.handle('voked:deleteSession', async (_e: any, id: string): Promise<void> => {
   const { SessionManager } = await core();
   await new SessionManager().delete(id);
 });
 
-ipcMain.handle('codix:loadConfig', async (_e: any, cwd: string): Promise<any> => {
+ipcMain.handle('voked:loadConfig', async (_e: any, cwd: string): Promise<any> => {
   const { loadMergedConfig } = await core();
   return await loadMergedConfig(cwd);
 });
 
-ipcMain.handle('codix:loadGlobalConfig', async (): Promise<any> => {
+ipcMain.handle('voked:loadGlobalConfig', async (): Promise<any> => {
   const { loadGlobalConfig } = await core();
   return await loadGlobalConfig();
 });
 
-ipcMain.handle('codix:saveGlobalConfig', async (_e: any, cfg: unknown): Promise<void> => {
+ipcMain.handle('voked:saveGlobalConfig', async (_e: any, cfg: unknown): Promise<void> => {
   const { saveGlobalConfig } = await core();
   await saveGlobalConfig(cfg);
 });
 
-ipcMain.handle('codix:listProviderModels', async (_e: any, provider: { type: string; apiKey?: string; baseURL?: string; headers?: Record<string, string> }): Promise<any[]> => {
+ipcMain.handle('voked:listProviderModels', async (_e: any, provider: { type: string; apiKey?: string; baseURL?: string; headers?: Record<string, string> }): Promise<any[]> => {
   const { listProviderModels } = await core();
   return await listProviderModels(provider);
 });
 
-ipcMain.handle('codix:testModel', async (_e: any, args: { model: any; providers?: any }): Promise<any> => {
+ipcMain.handle('voked:testModel', async (_e: any, args: { model: any; providers?: any }): Promise<any> => {
   const { testModelConnectivity } = await core();
   return await testModelConnectivity(args.model, { providers: args.providers });
 });
 
-ipcMain.handle('codix:defaultSkills', async (): Promise<any[]> => {
+ipcMain.handle('voked:defaultSkills', async (): Promise<any[]> => {
   const { DEFAULT_SKILLS } = await core();
   return DEFAULT_SKILLS;
 });
@@ -241,26 +241,26 @@ async function makeSkillInstaller(cwd: string): Promise<any> {
   return new SkillInstaller(sm, reg);
 }
 
-ipcMain.handle('codix:uninstallSkill', async (_e: any, opts: { name: string; cwd?: string }): Promise<void> => {
+ipcMain.handle('voked:uninstallSkill', async (_e: any, opts: { name: string; cwd?: string }): Promise<void> => {
   const cwd = opts.cwd ?? process.cwd();
   const installer = await makeSkillInstaller(cwd);
   await installer.uninstall(opts.name, { cwd });
 });
 
-ipcMain.handle('codix:listSkills', async (_e: any, cwd: string): Promise<any[]> => {
+ipcMain.handle('voked:listSkills', async (_e: any, cwd: string): Promise<any[]> => {
   const { loadMergedConfig, createBuiltinRegistry, SkillManager } = await core();
   const cfg = await loadMergedConfig(cwd);
   const reg = createBuiltinRegistry(cfg);
   return await new SkillManager(reg).listSkills(cwd);
 });
 
-ipcMain.handle('codix:installSkill', async (_e: any, opts: { source: string; cwd?: string }): Promise<string> => {
+ipcMain.handle('voked:installSkill', async (_e: any, opts: { source: string; cwd?: string }): Promise<string> => {
   const cwd = opts.cwd ?? process.cwd();
   const installer = await makeSkillInstaller(cwd);
   return await installer.install(opts.source, { cwd });
 });
 
-ipcMain.handle('codix:listMcp', async (_e: any, cwd: string): Promise<any[]> => {
+ipcMain.handle('voked:listMcp', async (_e: any, cwd: string): Promise<any[]> => {
   const { loadMergedConfig, McpManager } = await core();
   const cfg = await loadMergedConfig(cwd);
   const mcp = new McpManager();
@@ -276,7 +276,7 @@ ipcMain.handle('codix:listMcp', async (_e: any, cwd: string): Promise<any[]> => 
   return out;
 });
 
-ipcMain.handle('codix:readFile', async (_e: any, p: string, cwd: string): Promise<string> => {
+ipcMain.handle('voked:readFile', async (_e: any, p: string, cwd: string): Promise<string> => {
   // 大小限制 5MB（防 DoS）
   const fs = require('node:fs/promises');
   const path = require('node:path');
@@ -287,14 +287,14 @@ ipcMain.handle('codix:readFile', async (_e: any, p: string, cwd: string): Promis
   return await fs.readFile(abs, 'utf8');
 });
 
-ipcMain.handle('codix:writeRules', async (_e: any, opts: { cwd: string; content: string; scope: 'global' | 'project' }): Promise<string> => {
+ipcMain.handle('voked:writeRules', async (_e: any, opts: { cwd: string; content: string; scope: 'global' | 'project' }): Promise<string> => {
   const fs = require('node:fs/promises');
   const os = require('node:os');
   const path = require('node:path');
   const home = os.homedir();
   const target = opts.scope === 'global'
-    ? path.join(home, '.codix', 'rules.md')
-    : path.join(opts.cwd, '.codix', 'rules.md');
+    ? path.join(home, '.voked', 'rules.md')
+    : path.join(opts.cwd, '.voked', 'rules.md');
   // project scope：拒绝 cwd 越界
   if (opts.scope === 'project') {
     const absCwd = path.resolve(opts.cwd);
@@ -309,12 +309,12 @@ ipcMain.handle('codix:writeRules', async (_e: any, opts: { cwd: string; content:
   return target;
 });
 
-ipcMain.handle('codix:readRules', async (_e: any, opts: { cwd: string; scope: 'global' | 'project' }): Promise<string> => {
+ipcMain.handle('voked:readRules', async (_e: any, opts: { cwd: string; scope: 'global' | 'project' }): Promise<string> => {
   const fs = require('node:fs/promises');
   const os = require('node:os');
   const target = opts.scope === 'global'
-    ? path.join(os.homedir(), '.codix', 'rules.md')
-    : path.join(opts.cwd, '.codix', 'rules.md');
+    ? path.join(os.homedir(), '.voked', 'rules.md')
+    : path.join(opts.cwd, '.voked', 'rules.md');
   try {
     return await fs.readFile(target, 'utf8');
   } catch {
@@ -322,13 +322,13 @@ ipcMain.handle('codix:readRules', async (_e: any, opts: { cwd: string; scope: 'g
   }
 });
 
-ipcMain.handle('codix:homeDir', async (): Promise<string> => {
+ipcMain.handle('voked:homeDir', async (): Promise<string> => {
   const os = require('node:os');
   return os.homedir();
 });
 
 // 权限询问响应
-ipcMain.on('codix:ask-response', (_e: any, choice: 'allow' | 'deny' | 'allowAll') => {
+ipcMain.on('voked:ask-response', (_e: any, choice: 'allow' | 'deny' | 'allowAll') => {
   if (pendingAskResolver) {
     pendingAskResolver(choice);
     pendingAskResolver = null;

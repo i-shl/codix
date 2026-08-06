@@ -14,7 +14,7 @@ import {
   AgentRunner,
   loadRules,
   buildSystemPrompt,
-} from '@codix/core';
+} from '@voked/core';
 
 const passed: string[] = [];
 const failed: string[] = [];
@@ -44,7 +44,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise
 async function main(): Promise<void> {
   console.log('=== 高级测试：B 边界 + C 安全 + D 状态 ===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-adv-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-adv-'));
   console.log('[setup] cwd:', cwd, '\n');
 
   const cfg = await loadMergedConfig(cwd);
@@ -54,10 +54,10 @@ async function main(): Promise<void> {
   const registry = createBuiltinRegistry(cfg);
   const tools = registry.list();
   const perm = new PermissionEngine(cfg);
-  const sm = new SessionManager({ baseDir: path.join(cwd, '.codix', 'sessions') });
+  const sm = new SessionManager({ baseDir: path.join(cwd, '.voked', 'sessions') });
   const rules = await loadRules(cwd);
   const systemPrompt = buildSystemPrompt({
-    identity: 'You are codix. Be concise.',
+    identity: 'You are voked. Be concise.',
     tools: tools.map((t) => `- ${t.schema.name}: ${t.schema.description}`).join('\n'),
     rules: rules.combined,
   });
@@ -152,7 +152,7 @@ async function main(): Promise<void> {
   // C4: 写入 cwd 之外（全盘访问已放开）
   console.log('\n[C4] 写入 cwd 之外');
   const writeTool = registry.get('Write')!;
-  const outsideFile = path.join(os.tmpdir(), `codix-test-${Date.now()}.txt`);
+  const outsideFile = path.join(os.tmpdir(), `voked-test-${Date.now()}.txt`);
   const rC4 = await writeTool.execute({
     filePath: outsideFile,
     content: 'outside-cwd',

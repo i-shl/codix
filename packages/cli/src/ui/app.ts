@@ -1,5 +1,5 @@
 /**
- * codix CLI 主循环
+ * voked CLI 主循环
  *
  * 结构：
  *   Screen  ── 只管往终端吐字节（append-only 正文 + 差分 footer）
@@ -65,7 +65,7 @@ import {
   applyModel,
   persistPreference,
   type AgentRunHandle,
-  type codixContext,
+  type vokedContext,
 } from '../core.js';
 
 export interface AppOptions {
@@ -98,7 +98,7 @@ export class App {
   private theme: Theme;
   private editor = new Editor();
 
-  private ctx!: codixContext;
+  private ctx!: vokedContext;
   private sessionId = '';
 
   private phase: Phase = 'idle';

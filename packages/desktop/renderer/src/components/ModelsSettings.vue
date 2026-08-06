@@ -274,7 +274,7 @@ function uniqueKey(base: string, taken: Set<string>): string {
 async function load(): Promise<void> {
   loading.value = true;
   try {
-    const c = await window.codix.loadGlobalConfig();
+    const c = await window.voked.loadGlobalConfig();
     if (!c.models) c.models = {};
     if (!c.providers) c.providers = {};
     cfg.value = c;
@@ -291,7 +291,7 @@ async function load(): Promise<void> {
 /** 读取最新配置 → 变更 → 保存 → 回填。避免并发覆盖。 */
 async function mutate(fn: (c: GlobalConfig) => void | string): Promise<void> {
   try {
-    const c = await window.codix.loadGlobalConfig();
+    const c = await window.voked.loadGlobalConfig();
     if (!c.models) c.models = {};
     if (!c.providers) c.providers = {};
     const note = fn(c);
@@ -300,7 +300,7 @@ async function mutate(fn: (c: GlobalConfig) => void | string): Promise<void> {
       c.defaultModel = Object.keys(c.models)[0];
     }
     if (!c.defaultModel) c.defaultModel = Object.keys(c.models)[0];
-    await window.codix.saveGlobalConfig(plain(c));
+    await window.voked.saveGlobalConfig(plain(c));
     cfg.value = c;
     emit('modelsChanged');
     if (typeof note === 'string' && note) flash(note);
@@ -387,7 +387,7 @@ async function deleteProvider(id: string): Promise<void> {
 async function fetchModels(pid: string): Promise<DiscoveredModel[]> {
   const p = cfg.value?.providers?.[pid];
   if (!p) throw new Error(tr('ui.providerNotFound'));
-  return await window.codix.listProviderModels(
+  return await window.voked.listProviderModels(
     plain({
       type: normalizeType(p.type),
       apiKey: p.apiKey,
@@ -578,7 +578,7 @@ async function testModel(key: string): Promise<void> {
   if (!c || !m) return;
   testResults[key] = 'testing';
   try {
-    testResults[key] = await window.codix.testModel(
+    testResults[key] = await window.voked.testModel(
       plain({ model: m, providers: c.providers })
     );
   } catch (e) {

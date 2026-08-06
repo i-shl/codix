@@ -1,7 +1,7 @@
 {
-  "name": "@codix/core",
+  "name": "@voked/core",
   "version": "0.1.0",
-  "description": "Core engine for codix: Agent loop, tools, MCP, models, skills, permissions, sessions.",
+  "description": "Core engine for voked: Agent loop, tools, MCP, models, skills, permissions, sessions.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

@@ -1,16 +1,16 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
-# @codix/desktop
+# @voked/desktop
 
-codix's desktop client: an AI Agent client built with **Electron + Vue 3 + Vite**.
+voked's desktop client: an AI Agent client built with **Electron + Vue 3 + Vite**.
 
-It reuses the `@codix/core` engine and shares the same tools / models / MCP / Skills capabilities with the CLI.
+It reuses the `@voked/core` engine and shares the same tools / models / MCP / Skills capabilities with the CLI.
 
 ## Supported platforms
 
 | Platform | Installer | Package command |
 |---|---|---|
-| Windows | NSIS `.exe` (`codix-Setup-x.y.z.exe`) | `pnpm package:desktop:win` |
+| Windows | NSIS `.exe` (`voked-Setup-x.y.z.exe`) | `pnpm package:desktop:win` |
 | macOS | `.dmg` | `pnpm package:desktop:mac` |
 | Linux | `.AppImage` / `.deb` | `pnpm package:desktop:linux` |
 
@@ -20,8 +20,8 @@ It reuses the `@codix/core` engine and shares the same tools / models / MCP / Sk
 ## 1. Run / develop from source (pnpm)
 
 ```bash
-git clone https://github.com/i-shl/codix.git
-cd codix
+git clone https://github.com/i-shl/voked.git
+cd voked
 pnpm install
 pnpm build:desktop        # build renderer + main process first
 ```
@@ -74,14 +74,14 @@ The electron-builder config lives in this directory's `package.json` `build` fie
 ## 4. Testing
 
 ```bash
-pnpm --filter @codix/desktop test   # message-queue unit tests
-pnpm --filter @codix/desktop typecheck
+pnpm --filter @voked/desktop test   # message-queue unit tests
+pnpm --filter @voked/desktop typecheck
 ```
 
 ## Notes
 
-The desktop client and the CLI share the model / MCP / Skills config in `~/.codix/config.json` (initialize it once with the CLI's `--config`; the desktop can read it too).
+The desktop client and the CLI share the model / MCP / Skills config in `~/.voked/config.json` (initialize it once with the CLI's `--config`; the desktop can read it too).
 
 ## About this project
 
-codix was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model**.
+voked was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model**.

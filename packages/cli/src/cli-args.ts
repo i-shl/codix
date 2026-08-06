@@ -18,14 +18,14 @@ function resolveEarlyLang(): void {
     if (a.startsWith('--lang=')) { flag = a.slice('--lang='.length); break; }
     if (a.startsWith('-L') && a.length > 2) { flag = a.slice(2); break; }
   }
-  const env = process.env.CODIX_LANG || process.env.LANG || '';
+  const env = process.env.voked_LANG || process.env.LANG || '';
   setLang(resolveLang({ flag, env }));
 }
 resolveEarlyLang();
 
 const usage = `
 ${t('cli.usageTitle')}
-  $ codix [cwd] [options]
+  $ voked [cwd] [options]
 
 ${t('cli.optionsTitle')}
   --model, -m       ${t('cli.flag.model')}
@@ -37,12 +37,12 @@ ${t('cli.optionsTitle')}
   --version, -v     ${t('cli.flag.version')}
 
 ${t('cli.examplesTitle')}
-  $ codix
-  $ codix ./my-project
-  $ codix --lang en
-  $ codix --model claude
-  $ codix -r <sessionId>
-  $ codix --list
+  $ voked
+  $ voked ./my-project
+  $ voked --lang en
+  $ voked --model claude
+  $ voked -r <sessionId>
+  $ voked --list
 `;
 
 export const cli = meow(usage, {

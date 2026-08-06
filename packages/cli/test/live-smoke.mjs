@@ -1,6 +1,6 @@
 /**
  * 真机冒烟：用当前用户的真实模型配置跑一轮「读文件」，验证流式 tool_calls 在真服务上确实能落地。
- * 需要 ~/.codix/config.json 里有可用模型 + 网络，因此不进 pnpm test，手动跑：
+ * 需要 ~/.voked/config.json 里有可用模型 + 网络，因此不进 pnpm test，手动跑：
  *   node packages/cli/test/live-smoke.mjs
  */
 import { spawn } from 'node:child_process';
@@ -13,12 +13,12 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ENTRY = path.join(HERE, '..', 'dist', 'index.js');
 const ANSI = /\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]/g;
 
-const proj = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-live-'));
+const proj = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-live-'));
 await fs.writeFile(path.join(proj, 'secret.txt'), 'LIVE_SMOKE_TOKEN_9f3a\n', 'utf8');
 
 const proc = spawn(process.execPath, [ENTRY], {
   cwd: proj,
-  env: { ...process.env, CODIX_FORCE_TTY: '1', NO_COLOR: '1', COLUMNS: '100' },
+  env: { ...process.env, voked_FORCE_TTY: '1', NO_COLOR: '1', COLUMNS: '100' },
   stdio: ['pipe', 'pipe', 'pipe'],
 });
 let out = '';

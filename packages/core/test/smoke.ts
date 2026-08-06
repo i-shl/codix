@@ -1,7 +1,7 @@
 /**
  * 简单的烟雾测试 - 不调用模型，只测试模块导入和配置加载
  */
-import { loadGlobalConfig, createBuiltinRegistry, PermissionEngine, McpManager, SessionManager, loadRules, DEFAULT_CONFIG } from '@codix/core';
+import { loadGlobalConfig, createBuiltinRegistry, PermissionEngine, McpManager, SessionManager, loadRules, DEFAULT_CONFIG } from '@voked/core';
 
 async function main(): Promise<void> {
   console.log('=== Smoke Test ===');

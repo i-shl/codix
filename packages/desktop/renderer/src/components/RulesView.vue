@@ -5,7 +5,7 @@ import { t } from '../i18n';
 const props = defineProps<{ cwd: string }>();
 
 const content = ref('');
-const rulePath = ref('~/.codix/rules.md');
+const rulePath = ref('~/.voked/rules.md');
 const loading = ref(true);
 const saving = ref(false);
 const msg = ref('');
@@ -16,7 +16,7 @@ async function load(): Promise<void> {
   msg.value = '';
   msgType.value = '';
   try {
-    content.value = await window.codix.readRules({ cwd: props.cwd, scope: 'global' });
+    content.value = await window.voked.readRules({ cwd: props.cwd, scope: 'global' });
   } catch (e) {
     content.value = '';
     msg.value = t('ui.loadFailed') + (e as Error).message;
@@ -31,7 +31,7 @@ async function save(): Promise<void> {
   msg.value = '';
   msgType.value = '';
   try {
-    rulePath.value = await window.codix.writeRules({
+    rulePath.value = await window.voked.writeRules({
       cwd: props.cwd,
       content: content.value,
       scope: 'global',

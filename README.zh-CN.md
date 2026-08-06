@@ -1,12 +1,12 @@
 [中文](./README.zh-CN.md) | [English](./README.md)
 
-# codix
+# voked
 
-codix 是一个 AI Agent，同时提供**命令行（CLI）**与**桌面端（Electron + Vue 3）**两种形态，底层共享同一套核心引擎 `@codix/core`。
+voked 是一个 AI Agent，同时提供**命令行（CLI）**与**桌面端（Electron + Vue 3）**两种形态，底层共享同一套核心引擎 `@voked/core`。
 
-## codix 是什么？
+## voked 是什么？
 
-codix（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。你把它指向一个项目目录，它就能读取文件、编辑代码、执行命令、调用工具，并串联 MCP 服务器与技能（skill）——全部由你选定的大模型驱动。同一套引擎驱动两种前端：轻量的 ANSI 终端界面，以及完整的 Electron 桌面端，可按习惯自由选择。
+voked（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。你把它指向一个项目目录，它就能读取文件、编辑代码、执行命令、调用工具，并串联 MCP 服务器与技能（skill）——全部由你选定的大模型驱动。同一套引擎驱动两种前端：轻量的 ANSI 终端界面，以及完整的 Electron 桌面端，可按习惯自由选择。
 
 ## 功能
 
@@ -16,10 +16,10 @@ codix（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。
 - 多模型：OpenAI 兼容、Anthropic、Gemini，运行时自由切换
 - 会话与历史：JSON 文件持久化、列表、恢复
 - 多模态：粘贴图片、附加文件
-- 全局 / 项目级规则（`~/.codix/rules.md`、`<project>/.codix/rules.md`）
+- 全局 / 项目级规则（`~/.voked/rules.md`、`<project>/.voked/rules.md`）
 - 上下文压缩：超过阈值自动压缩
 
-> **权限模式：** codix 默认处于「全自动」模式，工具调用直接执行，无需逐次确认。
+> **权限模式：** voked 默认处于「全自动」模式，工具调用直接执行，无需逐次确认。
 
 ## 支持的平台
 
@@ -35,7 +35,7 @@ codix（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。
 ## 仓库结构（pnpm monorepo）
 
 ```
-codix/
+voked/
 ├── packages/
 │   ├── core/        共享核心（Agent / 工具 / MCP / 模型 / Skill / 会话 / 规则）
 │   ├── cli/         纯 ANSI 手写 TUI 的命令行客户端（无第三方终端框架）
@@ -45,7 +45,7 @@ codix/
 └── README.md        本文件的英文版
 ```
 
-CLI 与桌面端都依赖 `@codix/core`，核心引擎只写一份。
+CLI 与桌面端都依赖 `@voked/core`，核心引擎只写一份。
 
 ## 一、从源码运行 / 开发（pnpm）
 
@@ -61,8 +61,8 @@ npm i -g pnpm
 ### 安装依赖并构建
 
 ```bash
-git clone https://github.com/i-shl/codix.git
-cd codix
+git clone https://github.com/i-shl/voked.git
+cd voked
 pnpm install      # 会自动执行 prepare，构建 core + cli
 pnpm build        # 构建全部（core / cli / desktop）
 ```
@@ -73,7 +73,7 @@ pnpm build        # 构建全部（core / cli / desktop）
 node packages/cli/dist/index.js --config
 ```
 
-会创建 `~/.codix/config.json`，编辑它填入 API Key：
+会创建 `~/.voked/config.json`，编辑它填入 API Key：
 
 ```json
 {
@@ -109,7 +109,7 @@ node packages/cli/dist/index.js --config
 }
 ```
 
-> API Key 只存在于你本机的 `~/.codix/`（已被 `.gitignore` 忽略），**不会进入源码仓库**。
+> API Key 只存在于你本机的 `~/.voked/`（已被 `.gitignore` 忽略），**不会进入源码仓库**。
 
 ### 启动
 
@@ -128,24 +128,24 @@ pnpm build:desktop && cd packages/desktop && npx electron .
 只想用 CLI、不想碰源码，可以直接从 GitHub 安装：
 
 ```bash
-npm i -g github:i-shl/codix
+npm i -g github:i-shl/voked
 ```
 
 安装过程会：
 
 1. 克隆仓库并安装依赖；
-2. 自动执行 `prepare` 脚本构建 `@codix/core` 与 `@codix/cli`；
-3. 把 `codix` 命令链接到全局 PATH。
+2. 自动执行 `prepare` 脚本构建 `@voked/core` 与 `@voked/cli`；
+3. 把 `voked` 命令链接到全局 PATH。
 
 安装完成后即可在任意目录使用：
 
 ```bash
-codix ./你的项目目录
-codix --config      # 初始化配置
-codix --list        # 列出历史会话
+voked ./你的项目目录
+voked --config      # 初始化配置
+voked --list        # 列出历史会话
 ```
 
-> 说明：全局安装只装 CLI 所需的运行时依赖（含 `@codix/core`），**不会下载 Electron**，所以安装很快。若 npm 版本较旧（< 8.5），请先 `npm i -g npm@latest`。
+> 说明：全局安装只装 CLI 所需的运行时依赖（含 `@voked/core`），**不会下载 Electron**，所以安装很快。若 npm 版本较旧（< 8.5），请先 `npm i -g npm@latest`。
 
 ## 三、打包（发布到 GitHub Releases）
 
@@ -154,13 +154,13 @@ codix --list        # 列出历史会话
 在 **有网络的对应平台** 上执行（打包会下载该平台的 Electron 二进制）：
 
 ```bash
-# Windows → 生成 codix-Setup-x.y.z.exe（NSIS）
+# Windows → 生成 voked-Setup-x.y.z.exe（NSIS）
 pnpm package:desktop:win
 
-# macOS → 生成 codix-x.y.z.dmg
+# macOS → 生成 voked-x.y.z.dmg
 pnpm package:desktop:mac
 
-# Linux → 生成 codix-x.y.z.AppImage 与 .deb
+# Linux → 生成 voked-x.y.z.AppImage 与 .deb
 pnpm package:desktop:linux
 ```
 
@@ -171,22 +171,22 @@ pnpm package:desktop:linux
 
 ### CLI 发布到 npm
 
-CLI 以根包 `codix` 的形式发布到 npm registry。根 `package.json` 的 `files` 已包含 `packages/cli` 与 `packages/core` 的构建产物——核心引擎随包一起打包，`bin` 为 `codix` 命令，安装后无需再拉取 `@codix/core`。
+CLI 以根包 `voked` 的形式发布到 npm registry。根 `package.json` 的 `files` 已包含 `packages/cli` 与 `packages/core` 的构建产物——核心引擎随包一起打包，`bin` 为 `voked` 命令，安装后无需再拉取 `@voked/core`。
 
 ```bash
 # 1. 先构建全部（也可不手动构建，npm publish 时的 prepare 会自动再构建一次）
 pnpm build
 
-# 2. 发布（需先 npm login，且对 codix 包有发布权限）
+# 2. 发布（需先 npm login，且对 voked 包有发布权限）
 npm publish
 ```
 
 发布后用户安装使用：
 
 ```bash
-npm i -g codix
-codix ./你的项目目录
-codix --config
+npm i -g voked
+voked ./你的项目目录
+voked --config
 ```
 
 > 说明：
@@ -231,21 +231,21 @@ CLI 选项：
 
 ## 五、目录约定
 
-- `~/.codix/` — 全局配置、会话、技能（**含 API Key，已被 git 忽略**）
-- `<project>/.codix/` — 项目级配置、规则、skills
-- `~/.codix/rules.md` — 全局规则
-- `<project>/.codix/rules.md` — 项目级规则
-- `~/.codix/sessions/` — 会话存储
-- `~/.codix/skills/` — 全局 skill
+- `~/.voked/` — 全局配置、会话、技能（**含 API Key，已被 git 忽略**）
+- `<project>/.voked/` — 项目级配置、规则、skills
+- `~/.voked/rules.md` — 全局规则
+- `<project>/.voked/rules.md` — 项目级规则
+- `~/.voked/sessions/` — 会话存储
+- `~/.voked/skills/` — 全局 skill
 
 ## 界面语言（中 / 英）
 
-codix 内置中英双语界面，**界面默认中文（zh）**。
+voked 内置中英双语界面，**界面默认中文（zh）**。
 
-- **CLI**：启动前按以下优先级确定语言：`--lang` / `-L` > 环境变量 `CODIX_LANG` 或 `LANG` > 配置文件 `ui.language` > 默认（中文）。
-  - 命令行参数：`codix --lang en ./项目目录`（或 `-L en`）切换到英文。
-  - 环境变量：`CODIX_LANG=en codix ./项目目录`，或直接用系统 `LANG=en_US.UTF-8`（带区域后缀也能识别）。
-  - 配置文件：`~/.codix/config.json` 里加 `"ui": { "language": "en" }`，对所有 CLI 启动生效。
+- **CLI**：启动前按以下优先级确定语言：`--lang` / `-L` > 环境变量 `voked_LANG` 或 `LANG` > 配置文件 `ui.language` > 默认（中文）。
+  - 命令行参数：`voked --lang en ./项目目录`（或 `-L en`）切换到英文。
+  - 环境变量：`voked_LANG=en voked ./项目目录`，或直接用系统 `LANG=en_US.UTF-8`（带区域后缀也能识别）。
+  - 配置文件：`~/.voked/config.json` 里加 `"ui": { "language": "en" }`，对所有 CLI 启动生效。
 - **桌面端**：打开「设置 → 语言」，点「中文 / English」即可即时切换；选择会写入 `localStorage` 并同步到全局配置 `ui.language`，供 CLI 复用。
 
 > 语言切换只影响界面文案，不影响模型回复的语言。
@@ -296,7 +296,7 @@ export default {
 
 ## 关于本项目
 
-codix 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成——架构设计、编码、测试与文档均在一次连续的 AI 协作中产出。
+voked 由 **CodeBuddy 的 hy3 模型**从 0 到 1 全程辅助开发完成——架构设计、编码、测试与文档均在一次连续的 AI 协作中产出。
 
 ## License
 

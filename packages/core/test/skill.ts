@@ -9,12 +9,12 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import os from 'node:os';
-import { ToolRegistry, SkillManager, SkillInstaller } from '@codix/core';
+import { ToolRegistry, SkillManager, SkillInstaller } from '@voked/core';
 
 async function main(): Promise<void> {
   console.log('=== Skill 系统测试 ===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-skill-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-skill-'));
   console.log('[setup] cwd:', cwd);
 
   // 1. 创建一个测试 skill

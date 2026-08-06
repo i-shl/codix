@@ -7,8 +7,8 @@
  *  - assets/              静态资源
  *
  * 安装路径：
- *  - 全局：~/.codix/skills/<name>/
- *  - 项目：<project>/.codix/skills/<name>/
+ *  - 全局：~/.voked/skills/<name>/
+ *  - 项目：<project>/.voked/skills/<name>/
  */
 import path from 'node:path';
 import os from 'node:os';
@@ -16,19 +16,19 @@ import fs from 'node:fs/promises';
 import { ToolRegistry } from '../tools/registry.js';
 import type { Skill, SkillManifest, SkillToolDef } from '../types/skill.js';
 import { SkillError } from '../errors.js';
-import { CODIX_HOME, ensureDir, fileExists, isPathInside, readFileText } from '../utils/fs.js';
+import { voked_HOME, ensureDir, fileExists, isPathInside, readFileText } from '../utils/fs.js';
 
 /**
  * 技能发现目录（遵循 Agent Skills 生态约定，兼容 Claude Code / Codex）：
- *   - 项目级：<cwd>/.codix/skills（我们的项目安装位）、skills、.agents/skills、.claude/skills、.codex/skills
- *   - 用户级：~/.codix/skills（我们的全局安装位）、.agents/skills、.claude/skills、.codex/skills
+ *   - 项目级：<cwd>/.voked/skills（我们的项目安装位）、skills、.agents/skills、.claude/skills、.codex/skills
+ *   - 用户级：~/.voked/skills（我们的全局安装位）、.agents/skills、.claude/skills、.codex/skills
  *
  * 路径全部由 os.homedir() / cwd 推导，绝不写死绝对路径（如 C:\Users\xxx\.agents\skills）。
  */
 export function skillSearchRoots(cwd: string): string[] {
   const home = os.homedir();
   const roots: string[] = [
-    path.join(cwd, '.codix', 'skills'),
+    path.join(cwd, '.voked', 'skills'),
     path.join(cwd, 'skills'),
     path.join(cwd, '.agents', 'skills'),
     path.join(cwd, '.claude', 'skills'),
@@ -36,7 +36,7 @@ export function skillSearchRoots(cwd: string): string[] {
   ];
   if (home) {
     roots.push(
-      path.join(home, '.codix', 'skills'),
+      path.join(home, '.voked', 'skills'),
       path.join(home, '.agents', 'skills'),
       path.join(home, '.claude', 'skills'),
       path.join(home, '.codex', 'skills'),

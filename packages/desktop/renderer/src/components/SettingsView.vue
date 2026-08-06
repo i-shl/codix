@@ -13,13 +13,13 @@ const emit = defineEmits<{
 async function pickLang(next: Lang): Promise<void> {
   if (lang.value === next) return;
   setLang(next);
-  localStorage.setItem('codix:lang', next);
+  localStorage.setItem('voked:lang', next);
   try {
-    const global = (await window.codix.loadGlobalConfig()) as Config;
+    const global = (await window.voked.loadGlobalConfig()) as Config;
     const ui = (global.ui ?? {}) as Record<string, unknown>;
     ui.language = next;
     global.ui = ui;
-    await window.codix.saveGlobalConfig(global);
+    await window.voked.saveGlobalConfig(global);
   } catch {
     // 写配置失败不影响界面语言，localStorage 已经记住选择
   }
@@ -36,7 +36,7 @@ const showAdvanced = ref(false);
 
 async function loadMergedView(): Promise<void> {
   try {
-    const merged = (await window.codix.loadConfig('.')) as Config;
+    const merged = (await window.voked.loadConfig('.')) as Config;
     cfg.value = merged;
     jsonText.value = JSON.stringify(merged, null, 2);
     readOnly.value = true;
@@ -48,7 +48,7 @@ async function loadMergedView(): Promise<void> {
 
 async function loadGlobal(): Promise<void> {
   try {
-    const global = (await window.codix.loadGlobalConfig()) as Config;
+    const global = (await window.voked.loadGlobalConfig()) as Config;
     cfg.value = global;
     jsonText.value = JSON.stringify(global, null, 2);
     readOnly.value = false;
@@ -65,7 +65,7 @@ async function save(): Promise<void> {
   msgType.value = '';
   try {
     const parsed = JSON.parse(jsonText.value) as Config;
-    await window.codix.saveGlobalConfig(parsed);
+    await window.voked.saveGlobalConfig(parsed);
     msg.value = t('ui.saved');
     msgType.value = 'success';
     cfg.value = parsed;

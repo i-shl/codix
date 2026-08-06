@@ -3,7 +3,7 @@
  *
  * 同时服务于 CLI 与桌面端。默认语言为中文（zh）。
  * 用法：
- *   import { t, setLang, getLang, resolveLang } from '@codix/core';
+ *   import { t, setLang, getLang, resolveLang } from '@voked/core';
  *   setLang('en');
  *   t('cli.toolsReady', { model: 'gpt-4o', count: 12 });
  *
@@ -21,7 +21,7 @@ const zh: Dict = {
   // ---- CLI 通用 ----
   'cli.connecting': '连接中…',
   'cli.toolsReady': '${model} · ${count} 个工具就绪',
-  'cli.needTTY': 'codix CLI 需要交互式终端。管道 / CI 场景请用 --help 查看非交互用法。',
+  'cli.needTTY': 'voked CLI 需要交互式终端。管道 / CI 场景请用 --help 查看非交互用法。',
   'cli.dirNotExist': '目录不存在：${cwd}',
   'cli.usageTitle': 'Usage',
   'cli.optionsTitle': 'Options',
@@ -98,7 +98,7 @@ const zh: Dict = {
   'shell.exitCode': '退出码 ${code}',
 
   // ---- 模型 ----
-  'model.none': '还没有配置模型。在桌面端「设置 → 模型」里添加，或编辑 ~/.codix/config.json。',
+  'model.none': '还没有配置模型。在桌面端「设置 → 模型」里添加，或编辑 ~/.voked/config.json。',
   'model.switched': '已切换模型：${key}（${model}）',
   'model.notFound': '未找到模型：${key}',
   'model.matchCount': '匹配到 ${n} 个模型：',
@@ -123,7 +123,7 @@ const zh: Dict = {
   'config.defaultModel': '默认模型：${defaultModel}',
   'config.models': '已配置模型：${models}',
   'config.created': '已创建配置：${file}',
-  'config.apiKeyHint': '请填入 API Key 后重新运行 codix。',
+  'config.apiKeyHint': '请填入 API Key 后重新运行 voked。',
   'config.notSet': '(未设置)',
   'config.none': '(无)',
   'cmd.unknown': '未知命令：/${cmd}（输入 /help 查看命令列表）',
@@ -171,7 +171,7 @@ const zh: Dict = {
   'cmd.mcp.desc': '查看 MCP 服务器状态',
   'cmd.skills.desc': '列出已安装的 skill',
   'cmd.install.desc': '安装 skill',
-  'cmd.rules.desc': '查看全局规则文件（~/.codix/rules.md）',
+  'cmd.rules.desc': '查看全局规则文件（~/.voked/rules.md）',
   'cmd.config.desc': '查看配置',
   'cmd.status.desc': '显示当前会话状态',
   'cmd.clear.desc': '清屏（不清空会话）',
@@ -445,7 +445,7 @@ const zh: Dict = {
 const en: Dict = {
   'cli.connecting': 'Connecting…',
   'cli.toolsReady': '${model} · ${count} tools ready',
-  'cli.needTTY': 'codix CLI needs an interactive terminal. For pipes/CI, see --help for non-interactive usage.',
+  'cli.needTTY': 'voked CLI needs an interactive terminal. For pipes/CI, see --help for non-interactive usage.',
   'cli.dirNotExist': 'Directory does not exist: ${cwd}',
   'cli.usageTitle': 'Usage',
   'cli.optionsTitle': 'Options',
@@ -513,7 +513,7 @@ const en: Dict = {
   'shell.usage': 'Usage: !<shell command>',
   'shell.exitCode': 'Exit code ${code}',
 
-  'model.none': 'No models configured yet. Add one in desktop "Settings → Models", or edit ~/.codix/config.json.',
+  'model.none': 'No models configured yet. Add one in desktop "Settings → Models", or edit ~/.voked/config.json.',
   'model.switched': 'Switched model: ${key} (${model})',
   'model.notFound': 'Model not found: ${key}',
   'model.matchCount': 'Matched ${n} models:',
@@ -535,7 +535,7 @@ const en: Dict = {
   'config.defaultModel': 'Default model: ${defaultModel}',
   'config.models': 'Configured models: ${models}',
   'config.created': 'Created config: ${file}',
-  'config.apiKeyHint': 'Please add your API Key then run codix again.',
+  'config.apiKeyHint': 'Please add your API Key then run voked again.',
   'config.notSet': '(not set)',
   'config.none': '(none)',
   'cmd.unknown': 'Unknown command: /${cmd} (type /help for the list)',
@@ -579,7 +579,7 @@ const en: Dict = {
   'cmd.mcp.desc': 'Show MCP server status',
   'cmd.skills.desc': 'List installed skills',
   'cmd.install.desc': 'Install a skill',
-  'cmd.rules.desc': 'Show global rules file (~/.codix/rules.md)',
+  'cmd.rules.desc': 'Show global rules file (~/.voked/rules.md)',
   'cmd.config.desc': 'Show config',
   'cmd.status.desc': 'Show current session status',
   'cmd.clear.desc': 'Clear screen (keep session)',

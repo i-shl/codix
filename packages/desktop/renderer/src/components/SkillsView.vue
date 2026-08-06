@@ -36,7 +36,7 @@ function flash(text: string, type: 'success' | 'error' = 'success'): void {
 async function refresh(): Promise<void> {
   loading.value = true;
   try {
-    skills.value = (await window.codix.listSkills(props.cwd || '.')) as Skill[];
+    skills.value = (await window.voked.listSkills(props.cwd || '.')) as Skill[];
   } catch {
     skills.value = [];
   } finally {
@@ -46,7 +46,7 @@ async function refresh(): Promise<void> {
 
 async function loadRecommended(): Promise<void> {
   try {
-    recommended.value = await window.codix.defaultSkills();
+    recommended.value = await window.voked.defaultSkills();
   } catch {
     recommended.value = [];
   }
@@ -58,7 +58,7 @@ async function install(source: string, tag = source): Promise<void> {
   msg.value = '';
   msgType.value = '';
   try {
-    const dest = await window.codix.installSkill({ source: source.trim(), cwd: props.cwd });
+    const dest = await window.voked.installSkill({ source: source.trim(), cwd: props.cwd });
     flash(t('ui.skillInstalled') + dest);
     if (tag === '__manual__') installSource.value = '';
     await refresh();
@@ -72,7 +72,7 @@ async function install(source: string, tag = source): Promise<void> {
 async function uninstall(name: string): Promise<void> {
   pendingDelete.value = null;
   try {
-    await window.codix.uninstallSkill({ name, cwd: props.cwd });
+    await window.voked.uninstallSkill({ name, cwd: props.cwd });
     flash(t('ui.skillUninstalled') + name);
     await refresh();
   } catch (e) {
@@ -81,11 +81,11 @@ async function uninstall(name: string): Promise<void> {
 }
 
 function openExternal(url: string): void {
-  void window.codix.openExternal(url);
+  void window.voked.openExternal(url);
 }
 
 function openPath(p: string): void {
-  void window.codix.openPath(p);
+  void window.voked.openPath(p);
 }
 
 onMounted(() => {

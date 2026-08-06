@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * codix CLI 入口
+ * voked CLI 入口
  */
 import path from 'node:path';
 import process from 'node:process';
@@ -14,7 +14,7 @@ const VERSION = '0.1.0';
 
 /** 在进入交互界面前确定界面语言：--lang > 环境变量 > 配置 > 默认(中文) */
 function applyLanguage(): void {
-  const env = process.env.CODIX_LANG || process.env.LANG || '';
+  const env = process.env.voked_LANG || process.env.LANG || '';
   const envLang = /(^|[-_])en([-_]|$)/i.test(env) ? 'en' : undefined;
   void loadGlobalConfig()
     .then((cfg) => cfg.ui?.language)
@@ -25,7 +25,7 @@ function applyLanguage(): void {
 }
 
 async function initConfig(): Promise<void> {
-  const dir = path.join(os.homedir(), '.codix');
+  const dir = path.join(os.homedir(), '.voked');
   const file = path.join(dir, 'config.json');
   const exists = await fs.access(file).then(() => true).catch(() => false);
   if (exists) {
@@ -40,15 +40,15 @@ async function initConfig(): Promise<void> {
       openai: {
         label: 'OpenAI',
         type: 'openai-compatible',
-        apiKey: process.env.CODIX_API_KEY ?? '',
-        baseURL: process.env.CODIX_BASE_URL,
+        apiKey: process.env.voked_API_KEY ?? '',
+        baseURL: process.env.voked_BASE_URL,
       },
     },
     models: {
       default: {
         provider: 'openai-compatible',
         providerId: 'openai',
-        model: process.env.CODIX_MODEL ?? 'gpt-4o',
+        model: process.env.voked_MODEL ?? 'gpt-4o',
       },
     },
     defaultModel: 'default',
@@ -72,7 +72,7 @@ async function listSessions(): Promise<void> {
 
 async function main(): Promise<void> {
   // meow v13 仅在「只有 --help 一个参数」时才自动显示帮助（argv.length===1 守卫），
-  // 组合用法（如 `codix --lang en --help`）会被跳过。这里显式兜底，保证任意顺序都能看到帮助。
+  // 组合用法（如 `voked --lang en --help`）会被跳过。这里显式兜底，保证任意顺序都能看到帮助。
   if (cli.flags.help) { cli.showHelp(0); return; }
   if (cli.flags.version) { cli.showVersion(); return; }
   if (cli.flags.config) return initConfig();
@@ -87,7 +87,7 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  if (!process.stdin.isTTY && !process.env.CODIX_FORCE_TTY) {
+  if (!process.stdin.isTTY && !process.env.voked_FORCE_TTY) {
     console.error(t('cli.needTTY'));
     process.exit(1);
   }

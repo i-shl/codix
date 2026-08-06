@@ -103,7 +103,7 @@ function parseServer(text: string): McpServerConfig {
 async function loadConfig(): Promise<void> {
   loading.value = true;
   try {
-    const cfg = await window.codix.loadGlobalConfig();
+    const cfg = await window.voked.loadGlobalConfig();
     servers.value = Array.isArray(cfg.mcpServers) ? cfg.mcpServers : [];
   } catch (e) {
     flash(t('ui.loadFailed') + (e as Error).message, 'error');
@@ -115,11 +115,11 @@ async function loadConfig(): Promise<void> {
 
 async function mutate(fn: (list: McpServerConfig[]) => string | void): Promise<void> {
   try {
-    const cfg = (await window.codix.loadGlobalConfig()) as GlobalConfig;
+    const cfg = (await window.voked.loadGlobalConfig()) as GlobalConfig;
     const list = Array.isArray(cfg.mcpServers) ? cfg.mcpServers : [];
     const note = fn(list);
     cfg.mcpServers = list;
-    await window.codix.saveGlobalConfig(cfg);
+    await window.voked.saveGlobalConfig(cfg);
     servers.value = list;
     if (typeof note === 'string' && note) flash(note);
   } catch (e) {
@@ -132,7 +132,7 @@ async function testConnections(): Promise<void> {
   if (!props.cwd || testing.value) return;
   testing.value = true;
   try {
-    const list = (await window.codix.listMcp(props.cwd)) as McpStatus[];
+    const list = (await window.voked.listMcp(props.cwd)) as McpStatus[];
     const map: Record<string, McpStatus> = {};
     for (const s of list) map[s.name] = s;
     status.value = map;
@@ -243,7 +243,7 @@ onMounted(() => {
     <div class="mv-head">
       <div>
         <h2>{{ t('ui.mcp.title') }}</h2>
-        <p class="muted">{{ t('ui.mcp.desc') }}<code>~/.codix/config.json</code></p>
+        <p class="muted">{{ t('ui.mcp.desc') }}<code>~/.voked/config.json</code></p>
       </div>
       <div class="mv-head-actions">
         <button :disabled="testing || !servers.length" @click="testConnections">

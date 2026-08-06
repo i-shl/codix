@@ -2,17 +2,17 @@
  * 会话存储
  *
  * 存储路径：
- *   ~/.codix/sessions/<sessionId>.json
+ *   ~/.voked/sessions/<sessionId>.json
  *
  * 每个会话存为单个 JSON 文件，方便复制/备份/查看。
  */
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { CODIX_HOME, ensureDir, fileExists, writeFileAtomic } from '../utils/fs.js';
+import { voked_HOME, ensureDir, fileExists, writeFileAtomic } from '../utils/fs.js';
 import type { Session, SessionSummary } from '../types/session.js';
 
 export class SessionStore {
-  constructor(private baseDir: string = path.join(CODIX_HOME, 'sessions')) {}
+  constructor(private baseDir: string = path.join(voked_HOME, 'sessions')) {}
 
   async list(): Promise<SessionSummary[]> {
     await ensureDir(this.baseDir);

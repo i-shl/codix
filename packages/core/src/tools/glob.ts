@@ -30,7 +30,7 @@ export class GlobTool extends BaseTool<{ pattern: string; cwd?: string; ignore?:
       ignore: [
         '**/node_modules/**',
         '**/.git/**',
-        '**/.codix/**',
+        '**/.voked/**',
         ...(input.ignore ?? []),
       ],
       dot: false,

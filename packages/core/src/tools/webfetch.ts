@@ -37,7 +37,7 @@ export class WebFetchTool extends BaseTool<{ url: string; prompt?: string }> {
       return { toolCallId: '', content: `Error: 拒绝访问私有地址 ${host}`, isError: true };
     }
     try {
-      const res = await fetch(input.url, { headers: { 'User-Agent': 'codix/0.1' } });
+      const res = await fetch(input.url, { headers: { 'User-Agent': 'voked/0.1' } });
       if (!res.ok) return { toolCallId: '', content: `Error: HTTP ${res.status}`, isError: true };
       const ct = res.headers.get('content-type') ?? '';
       let body = await res.text();

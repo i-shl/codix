@@ -12,8 +12,8 @@
  */
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { OpenAIResponsesAdapter, testModelConnectivity } from '@codix/core';
-import type { Message, StreamEvent } from '@codix/core';
+import { OpenAIResponsesAdapter, testModelConnectivity } from '@voked/core';
+import type { Message, StreamEvent } from '@voked/core';
 
 let passed = 0;
 const failures: string[] = [];

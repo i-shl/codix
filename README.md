@@ -1,12 +1,12 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
-# codix
+# voked
 
-codix is an AI Agent that ships both a **command-line (CLI)** and a **desktop client (Electron + Vue 3)**, sharing one core engine `@codix/core`.
+voked is an AI Agent that ships both a **command-line (CLI)** and a **desktop client (Electron + Vue 3)**, sharing one core engine `@voked/core`.
 
-## What is codix?
+## What is voked?
 
-codix (a blend of "code" + "ix") is a local-first AI coding agent. You point it at a project directory and it can read, edit, run commands, call tools, and chain MCP servers / skills — all driven by a large language model of your choice. The same engine powers two front-ends: a lightweight ANSI terminal UI and a full Electron desktop app, so you can use whichever fits your workflow.
+voked (a blend of "code" + "ix") is a local-first AI coding agent. You point it at a project directory and it can read, edit, run commands, call tools, and chain MCP servers / skills — all driven by a large language model of your choice. The same engine powers two front-ends: a lightweight ANSI terminal UI and a full Electron desktop app, so you can use whichever fits your workflow.
 
 ## Features
 
@@ -16,10 +16,10 @@ codix (a blend of "code" + "ix") is a local-first AI coding agent. You point it 
 - Multi-model: OpenAI-compatible, Anthropic, Gemini — switch freely at runtime
 - Sessions & history: JSON-file persistence, listing, resume
 - Multimodal: paste images, attach files
-- Global / project rules (`~/.codix/rules.md`, `<project>/.codix/rules.md`)
+- Global / project rules (`~/.voked/rules.md`, `<project>/.voked/rules.md`)
 - Context compaction: auto-compress beyond a threshold
 
-> **Permission model:** codix runs in "full-auto" mode by default — tool calls execute directly without per-step confirmation.
+> **Permission model:** voked runs in "full-auto" mode by default — tool calls execute directly without per-step confirmation.
 
 ## Supported platforms
 
@@ -35,7 +35,7 @@ codix (a blend of "code" + "ix") is a local-first AI coding agent. You point it 
 ## Repository structure (pnpm monorepo)
 
 ```
-codix/
+voked/
 ├── packages/
 │   ├── core/        Shared core (Agent / tools / MCP / models / Skills / sessions / rules)
 │   ├── cli/         CLI client with a hand-written ANSI TUI (no third-party terminal framework)
@@ -45,7 +45,7 @@ codix/
 └── README.md        This file
 ```
 
-Both the CLI and the desktop client depend on `@codix/core` — the engine is written only once.
+Both the CLI and the desktop client depend on `@voked/core` — the engine is written only once.
 
 ## 1. Run / develop from source (pnpm)
 
@@ -61,8 +61,8 @@ npm i -g pnpm
 ### Install dependencies and build
 
 ```bash
-git clone https://github.com/i-shl/codix.git
-cd codix
+git clone https://github.com/i-shl/voked.git
+cd voked
 pnpm install      # runs prepare automatically, building core + cli
 pnpm build        # build everything (core / cli / desktop)
 ```
@@ -73,7 +73,7 @@ pnpm build        # build everything (core / cli / desktop)
 node packages/cli/dist/index.js --config
 ```
 
-This creates `~/.codix/config.json`; edit it to add your API key:
+This creates `~/.voked/config.json`; edit it to add your API key:
 
 ```json
 {
@@ -109,7 +109,7 @@ This creates `~/.codix/config.json`; edit it to add your API key:
 }
 ```
 
-> API keys live only in your local `~/.codix/` (ignored by `.gitignore`) and **never enter the source repo**.
+> API keys live only in your local `~/.voked/` (ignored by `.gitignore`) and **never enter the source repo**.
 
 ### Launch
 
@@ -128,24 +128,24 @@ pnpm build:desktop && cd packages/desktop && npx electron .
 If you just want the CLI without touching the source, install it directly from GitHub:
 
 ```bash
-npm i -g github:i-shl/codix
+npm i -g github:i-shl/voked
 ```
 
 The install will:
 
 1. Clone the repo and install dependencies;
-2. Run the `prepare` script to build `@codix/core` and `@codix/cli` automatically;
-3. Link the `codix` command into your global PATH.
+2. Run the `prepare` script to build `@voked/core` and `@voked/cli` automatically;
+3. Link the `voked` command into your global PATH.
 
 After installation you can use it from any directory:
 
 ```bash
-codix ./your-project-dir
-codix --config      # initialize config
-codix --list        # list session history
+voked ./your-project-dir
+voked --config      # initialize config
+voked --list        # list session history
 ```
 
-> Note: a global install only pulls the CLI runtime deps (including `@codix/core`) and **does not download Electron**, so it is fast. If your npm is old (< 8.5), run `npm i -g npm@latest` first.
+> Note: a global install only pulls the CLI runtime deps (including `@voked/core`) and **does not download Electron**, so it is fast. If your npm is old (< 8.5), run `npm i -g npm@latest` first.
 
 ## 3. Packaging (publish to GitHub Releases)
 
@@ -154,13 +154,13 @@ codix --list        # list session history
 Run on the **corresponding platform with network access** (packaging downloads that platform's Electron binary):
 
 ```bash
-# Windows → codix-Setup-x.y.z.exe (NSIS)
+# Windows → voked-Setup-x.y.z.exe (NSIS)
 pnpm package:desktop:win
 
-# macOS → codix-x.y.z.dmg
+# macOS → voked-x.y.z.dmg
 pnpm package:desktop:mac
 
-# Linux → codix-x.y.z.AppImage and .deb
+# Linux → voked-x.y.z.AppImage and .deb
 pnpm package:desktop:linux
 ```
 
@@ -171,22 +171,22 @@ Artifacts land in `packages/desktop/release/` (ignored by `.gitignore`, not comm
 
 ### Publish CLI to npm
 
-The CLI is published to the npm registry as the root package `codix`. The root `package.json` `files` field already includes the built outputs of `packages/cli` and `packages/core` — the core engine ships with the package, and the `bin` is the `codix` command, so no separate `@codix/core` install is needed after install.
+The CLI is published to the npm registry as the root package `voked`. The root `package.json` `files` field already includes the built outputs of `packages/cli` and `packages/core` — the core engine ships with the package, and the `bin` is the `voked` command, so no separate `@voked/core` install is needed after install.
 
 ```bash
 # 1. Build everything first (optional — npm publish's prepare rebuilds anyway)
 pnpm build
 
-# 2. Publish (requires npm login and publish rights for the codix package)
+# 2. Publish (requires npm login and publish rights for the voked package)
 npm publish
 ```
 
 After publishing, users install and run:
 
 ```bash
-npm i -g codix
-codix ./your-project-dir
-codix --config
+npm i -g voked
+voked ./your-project-dir
+voked --config
 ```
 
 > Notes:
@@ -231,21 +231,21 @@ CLI options:
 
 ## 5. Directory conventions
 
-- `~/.codix/` — global config, sessions, skills (**contains API keys, git-ignored**)
-- `<project>/.codix/` — project-level config, rules, skills
-- `~/.codix/rules.md` — global rules
-- `<project>/.codix/rules.md` — project-level rules
-- `~/.codix/sessions/` — session storage
-- `~/.codix/skills/` — global skills
+- `~/.voked/` — global config, sessions, skills (**contains API keys, git-ignored**)
+- `<project>/.voked/` — project-level config, rules, skills
+- `~/.voked/rules.md` — global rules
+- `<project>/.voked/rules.md` — project-level rules
+- `~/.voked/sessions/` — session storage
+- `~/.voked/skills/` — global skills
 
 ## Interface language (English / 中文)
 
-codix ships a bilingual UI (**English / 中文**). The **default is Chinese (zh)** for the interface.
+voked ships a bilingual UI (**English / 中文**). The **default is Chinese (zh)** for the interface.
 
-- **CLI**: language is resolved before startup by this priority: `--lang` / `-L` > env `CODIX_LANG` or `LANG` > config `ui.language` > default (Chinese).
-  - Flag: `codix --lang en ./project-dir` (or `-L en`) switches to English.
-  - Env: `CODIX_LANG=en codix ./project-dir`, or just use the system `LANG=en_US.UTF-8` (the region suffix is recognized).
-  - Config: add `"ui": { "language": "en" }` to `~/.codix/config.json` to apply to every CLI launch.
+- **CLI**: language is resolved before startup by this priority: `--lang` / `-L` > env `voked_LANG` or `LANG` > config `ui.language` > default (Chinese).
+  - Flag: `voked --lang en ./project-dir` (or `-L en`) switches to English.
+  - Env: `voked_LANG=en voked ./project-dir`, or just use the system `LANG=en_US.UTF-8` (the region suffix is recognized).
+  - Config: add `"ui": { "language": "en" }` to `~/.voked/config.json` to apply to every CLI launch.
 - **Desktop**: open **Settings → Language** and click **中文 / English** to switch instantly; the choice is written to `localStorage` and synced to the global config `ui.language`, so the CLI reuses it.
 
 > Switching language only changes the UI text; it does not change the language of the model's replies.
@@ -296,7 +296,7 @@ export default {
 
 ## About this project
 
-codix was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model** — architecture, coding, testing, and docs were all produced in one continuous AI collaboration.
+voked was built from 0 to 1 with the full assistance of the **CodeBuddy hy3 model** — architecture, coding, testing, and docs were all produced in one continuous AI collaboration.
 
 ## License
 

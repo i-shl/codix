@@ -69,7 +69,7 @@ function detectModernWindowsTerminal(): boolean {
 }
 
 export function detectCaps(stream: NodeJS.WriteStream = process.stdout): TermCaps {
-  const forced = envFlag('CODIX_FORCE_TTY');
+  const forced = envFlag('voked_FORCE_TTY');
   const isTTY = forced ?? !!stream.isTTY;
 
   const isWin = process.platform === 'win32';
@@ -106,10 +106,10 @@ export function detectCaps(stream: NodeJS.WriteStream = process.stdout): TermCap
   else if (forceColor === true && color === 0) color = 16;
 
   const unicode =
-    envFlag('CODIX_UNICODE') ??
+    envFlag('voked_UNICODE') ??
     (!legacyConhost && process.env.LANG !== 'C' && process.env.LC_ALL !== 'C');
 
-  const sync = envFlag('CODIX_SYNC') ?? (isTTY && !legacyConhost);
+  const sync = envFlag('voked_SYNC') ?? (isTTY && !legacyConhost);
 
   return { isTTY, color, unicode, sync, legacyConhost };
 }

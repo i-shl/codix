@@ -70,7 +70,7 @@ export interface DefaultSkill {
   description: string;
 }
 
-export interface codixAPI {
+export interface vokedAPI {
   openFolderDialog: () => Promise<string | null>;
   openExternal: (url: string) => Promise<void>;
   openPath: (p: string) => Promise<void>;

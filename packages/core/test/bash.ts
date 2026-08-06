@@ -18,11 +18,11 @@ async function main(): Promise<void> {
   // 1. echo 简单命令
   {
     const r = await tool.execute(
-      { command: 'echo hello-codix' },
+      { command: 'echo hello-voked' },
       { cwd: process.cwd(), signal: ac.signal, sessionId: 'test' }
     );
     const content = typeof r.content === 'string' ? r.content : String(r.content);
-    check(content.includes('hello-codix'), 'echo 输出包含 hello-codix');
+    check(content.includes('hello-voked'), 'echo 输出包含 hello-voked');
     check(content.includes('[exit 0]') || !r.isError, 'exit code 0');
   }
 

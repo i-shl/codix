@@ -1,13 +1,13 @@
 /**
  * 配置加载 - 多层级合并：
  *  1. 内置 defaults
- *  2. 全局 ~/.codix/config.json
- *  3. 项目 .codix/config.json
+ *  2. 全局 ~/.voked/config.json
+ *  3. 项目 .voked/config.json
  *  4. 环境变量（覆盖）
  */
 import path from 'node:path';
 import { z } from 'zod';
-import { CODIX_HOME, ensureDir, fileExists, readFileText, writeFileAtomic } from '../utils/fs.js';
+import { voked_HOME, ensureDir, fileExists, readFileText, writeFileAtomic } from '../utils/fs.js';
 import { deepMerge } from '../utils/common.js';
 import { ConfigError } from '../errors.js';
 import { getLogger } from '../logger.js';
@@ -114,8 +114,8 @@ export function parseConfig(raw: unknown): GlobalConfig {
 }
 
 export async function loadGlobalConfig(): Promise<GlobalConfig> {
-  await ensureDir(CODIX_HOME);
-  const globalPath = path.join(CODIX_HOME, 'config.json');
+  await ensureDir(voked_HOME);
+  const globalPath = path.join(voked_HOME, 'config.json');
   let merged: GlobalConfig = deepMerge<GlobalConfig>(DEFAULT_CONFIG, {} as GlobalConfig);
   if (await fileExists(globalPath)) {
     try {
@@ -130,7 +130,7 @@ export async function loadGlobalConfig(): Promise<GlobalConfig> {
 }
 
 export async function loadProjectConfig(cwd: string): Promise<GlobalConfig | null> {
-  const projectPath = path.join(cwd, '.codix', 'config.json');
+  const projectPath = path.join(cwd, '.voked', 'config.json');
   if (!(await fileExists(projectPath))) return null;
   try {
     const text = await readFileText(projectPath);
@@ -150,10 +150,10 @@ export async function loadMergedConfig(cwd: string): Promise<GlobalConfig> {
 
 function applyEnvOverrides(cfg: GlobalConfig): GlobalConfig {
   const next = { ...cfg };
-  // 环境变量覆盖：例如 CODIX_API_KEY、CODIX_BASE_URL、CODIX_MODEL
-  const apiKey = process.env.CODIX_API_KEY || process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
-  const baseURL = process.env.CODIX_BASE_URL || process.env.OPENAI_BASE_URL || process.env.ANTHROPIC_BASE_URL;
-  const modelName = process.env.CODIX_MODEL || process.env.OPENAI_MODEL || process.env.ANTHROPIC_MODEL;
+  // 环境变量覆盖：例如 voked_API_KEY、voked_BASE_URL、voked_MODEL
+  const apiKey = process.env.voked_API_KEY || process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY;
+  const baseURL = process.env.voked_BASE_URL || process.env.OPENAI_BASE_URL || process.env.ANTHROPIC_BASE_URL;
+  const modelName = process.env.voked_MODEL || process.env.OPENAI_MODEL || process.env.ANTHROPIC_MODEL;
   if (apiKey || baseURL || modelName) {
     const key = next.defaultModel ?? '__env__';
     const cur = next.models[key] ?? { provider: 'openai', model: modelName ?? 'gpt-4o' } as GlobalConfig['models'][string];
@@ -169,13 +169,13 @@ function applyEnvOverrides(cfg: GlobalConfig): GlobalConfig {
 }
 
 export async function saveGlobalConfig(cfg: GlobalConfig): Promise<void> {
-  await ensureDir(CODIX_HOME);
-  const p = path.join(CODIX_HOME, 'config.json');
+  await ensureDir(voked_HOME);
+  const p = path.join(voked_HOME, 'config.json');
   await writeFileAtomic(p, JSON.stringify(cfg, null, 2));
 }
 
 export async function saveProjectConfig(cwd: string, cfg: Partial<GlobalConfig>): Promise<void> {
-  const dir = path.join(cwd, '.codix');
+  const dir = path.join(cwd, '.voked');
   await ensureDir(dir);
   const p = path.join(dir, 'config.json');
   let existing: GlobalConfig = DEFAULT_CONFIG;

@@ -1,19 +1,15 @@
 {
-  "name": "@i-shl/codix",
+  "name": "voked",
   "version": "0.1.0",
   "private": false,
-  "description": "codix - AI Agent CLI + Electron Desktop, supports tools, MCP, skills, multi-model, sessions, permissions.",
+  "description": "voked - AI Agent CLI + Electron Desktop, supports tools, MCP, skills, multi-model, sessions, permissions.",
   "type": "module",
   "engines": {
     "node": ">=20"
   },
-  "bin": {
-    "codix": "packages/cli/dist/index.js"
-  },
   "files": [
     "packages/cli/dist",
     "packages/core/dist",
-    "packages/core/src",
     "README.md",
     "LICENSE"
   ],
@@ -27,44 +23,57 @@
     "coding-assistant",
     "code-pilot"
   ],
-  "author": "codix",
+  "author": "voked",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/i-shl/codix.git"
+    "url": "git+https://github.com/i-shl/voked.git"
   },
-  "homepage": "https://github.com/i-shl/codix#readme",
+  "homepage": "https://github.com/i-shl/voked#readme",
   "bugs": {
-    "url": "https://github.com/i-shl/codix/issues"
+    "url": "https://github.com/i-shl/voked/issues"
   },
   "workspaces": [
     "packages/*"
   ],
+  "dependencies": {
+    "meow": "^13.2.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "diff": "^5.2.0",
+    "fast-glob": "^3.3.2",
+    "nanoid": "^5.0.7",
+    "zod": "^3.23.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "pnpm -r build",
-    "dev:cli": "pnpm --filter @codix/cli dev",
-    "dev:desktop": "pnpm --filter @codix/desktop dev",
-    "build:core": "pnpm --filter @codix/core build",
-    "build:cli": "pnpm --filter @codix/cli build",
-    "build:desktop": "pnpm --filter @codix/desktop build",
-    "test": "pnpm --filter @codix/core test && pnpm --filter @codix/desktop test && pnpm --filter @codix/cli test",
+    "dev:cli": "pnpm --filter @voked/cli dev",
+    "dev:desktop": "pnpm --filter @voked/desktop dev",
+    "build:core": "pnpm --filter @voked/core build",
+    "build:cli": "pnpm --filter @voked/cli build",
+    "build:desktop": "pnpm --filter @voked/desktop build",
+    "test": "pnpm --filter @voked/core test && pnpm --filter @voked/desktop test && pnpm --filter @voked/cli test",
     "cli": "pnpm build && node packages/cli/dist/index.js",
     "cli:config": "pnpm build && node packages/cli/dist/index.js --config",
     "desktop": "pnpm build:desktop && cd packages/desktop && electron .",
     "package:cli": "pnpm build:cli",
-    "package:desktop": "pnpm --filter @codix/desktop package",
-    "package:desktop:win": "pnpm --filter @codix/desktop package:win",
-    "package:desktop:mac": "pnpm --filter @codix/desktop package:mac",
-    "package:desktop:linux": "pnpm --filter @codix/desktop package:linux",
-    "link:cli": "pnpm build:cli && pnpm --filter @codix/cli exec npm link",
+    "package:desktop": "pnpm --filter @voked/desktop package",
+    "package:desktop:win": "pnpm --filter @voked/desktop package:win",
+    "package:desktop:mac": "pnpm --filter @voked/desktop package:mac",
+    "package:desktop:linux": "pnpm --filter @voked/desktop package:linux",
+    "link:cli": "pnpm build:cli && pnpm --filter @voked/cli exec npm link",
     "clean": "pnpm -r exec rm -rf dist dist-electron dist-renderer release node_modules .turbo",
     "typecheck": "pnpm -r typecheck",
-    "lint": "pnpm -r lint",
-    "prepare": "tsc -p packages/core/tsconfig.json && tsc -p packages/cli/tsconfig.json"
+    "lint": "pnpm -r lint"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "typescript": "^5.4.5"
   },
-  "packageManager": "pnpm@11.17.0"
+  "packageManager": "pnpm@11.17.0",
+  "bin": {
+    "voked": "packages/cli/dist/index.js"
+  }
 }

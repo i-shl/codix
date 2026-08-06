@@ -45,7 +45,7 @@ await send('Runtime.enable');
 console.log('connected');
 
 // 0. 记录现有会话，用于事后清理
-const before = await evalJs(`(async () => (await window.codix.listSessions(await window.codix.homeDir())).map(s => s.id))()`);
+const before = await evalJs(`(async () => (await window.voked.listSessions(await window.voked.homeDir())).map(s => s.id))()`);
 console.log('sessions before:', before);
 
 // 1. 点左上角 ＋ 新建会话
@@ -53,7 +53,7 @@ await evalJs(`document.querySelector('.sidebar-top .top-btn.primary').click(); t
 await sleep(1500);
 
 // 2. 用原生 setter 注入文本（绕开 CDP 输入法问题），然后点发送按钮
-await evalJs(`(() => { const ta = document.querySelector('.composer textarea'); if (!ta) return 'NO_TA'; const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set; setter.call(ta, '请读取 D:\\\\other\\\\codix\\\\package.json 文件内容，然后用中文告诉我里面有哪些 scripts 命令'); ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus(); return 'OK'; })()`);
+await evalJs(`(() => { const ta = document.querySelector('.composer textarea'); if (!ta) return 'NO_TA'; const setter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, 'value').set; setter.call(ta, '请读取 D:\\\\other\\\\voked\\\\package.json 文件内容，然后用中文告诉我里面有哪些 scripts 命令'); ta.dispatchEvent(new Event('input', { bubbles: true })); ta.focus(); return 'OK'; })()`);
 await sleep(500);
 console.log('send state:', await evalJs(`(() => { const b = document.querySelector('.composer .send'); return JSON.stringify({ disabled: b ? b.disabled : 'NO_BTN', len: (document.querySelector('.composer textarea') || {}).value?.length ?? -1 }) })()`));
 await evalJs(`(() => { const b = document.querySelector('.composer .send'); if (b) b.click(); return !!b; })()`);
@@ -88,10 +88,10 @@ await sleep(900);
 console.log('sidebar-hidden after expand:', await evalJs(`document.querySelector('.layout').classList.contains('sidebar-hidden')`));
 
 // 5. 清理测试会话（删除新建的会话）
-const after = await evalJs(`(async () => (await window.codix.listSessions(await window.codix.homeDir())).map(s => s.id))()`);
+const after = await evalJs(`(async () => (await window.voked.listSessions(await window.voked.homeDir())).map(s => s.id))()`);
 const newIds = after.filter((id) => !before.includes(id));
 for (const id of newIds) {
-  await evalJs(`(async () => { await window.codix.deleteSession('${id}'); return true; })()`);
+  await evalJs(`(async () => { await window.voked.deleteSession('${id}'); return true; })()`);
 }
 console.log('deleted test sessions:', newIds.length ? newIds : 'none');
 

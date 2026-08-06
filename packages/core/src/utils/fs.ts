@@ -7,7 +7,7 @@ import os from 'node:os';
 import { ToolError } from '../errors.js';
 
 export const HOME_DIR = os.homedir();
-export const CODIX_HOME = path.join(HOME_DIR, '.codix');
+export const voked_HOME = path.join(HOME_DIR, '.voked');
 
 export async function ensureDir(p: string): Promise<void> {
   await fs.mkdir(p, { recursive: true });

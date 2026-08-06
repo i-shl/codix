@@ -10,7 +10,7 @@ out/
 *.tsbuildinfo
 coverage/
 .cache/
-.codix/
+.voked/
 data/sessions/
 data/cache/
 # electron-builder 打包产物（上传到 GitHub Releases，不入库）

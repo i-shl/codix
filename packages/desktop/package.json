@@ -1,9 +1,9 @@
 {
-  "name": "@codix/desktop",
+  "name": "@voked/desktop",
   "version": "0.1.0",
-  "description": "codix Desktop - Electron + Vue3 AI agent client.",
+  "description": "voked Desktop - Electron + Vue3 AI agent client.",
   "main": "./dist-electron/main.js",
-  "author": "codix",
+  "author": "voked",
   "scripts": {
     "dev:renderer": "vite",
     "dev:electron": "tsc -p tsconfig.electron.json --watch",
@@ -20,7 +20,7 @@
     "package:linux": "pnpm build && electron-builder --linux"
   },
   "dependencies": {
-    "@codix/core": "file:../core",
+    "@voked/core": "file:../core",
     "markstream-vue": "^1.0.8",
     "vue": "^3.4.0"
   },
@@ -36,8 +36,8 @@
     "wait-on": "^7.2.0"
   },
   "build": {
-    "appId": "com.codix.app",
-    "productName": "codix",
+    "appId": "com.voked.app",
+    "productName": "voked",
     "directories": {
       "output": "release",
       "buildResources": "build"
@@ -64,7 +64,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "codix"
+      "shortcutName": "voked"
     },
     "mac": {
       "target": "dmg",

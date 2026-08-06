@@ -1,4 +1,4 @@
-# @codix/core
+# @voked/core
 
 共享核心引擎。所有 CLI/Desktop 都依赖它。
 
@@ -18,7 +18,7 @@
 ## 用法
 
 ```typescript
-import { createAgentContext, runAgent } from '@codix/core';
+import { createAgentContext, runAgent } from '@voked/core';
 
 const ctx = await createAgentContext('/path/to/project');
 const handle = runAgent(ctx, sessionId, { text: '你好' }, {

@@ -16,7 +16,7 @@ import {
   AgentRunner,
   loadRules,
   buildSystemPrompt,
-} from '@codix/core';
+} from '@voked/core';
 
 const passed: string[] = [];
 const failed: string[] = [];
@@ -62,7 +62,7 @@ async function runWithModel(
 async function main(): Promise<void> {
   console.log('=== Suite A: 功能完整性（每个工具独立测试）===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-a-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-a-'));
   console.log('[setup] cwd:', cwd);
 
   const cfg = await loadMergedConfig(cwd);
@@ -71,10 +71,10 @@ async function main(): Promise<void> {
   const registry = createBuiltinRegistry(cfg);
   const tools = registry.list();
   const perm = new PermissionEngine(cfg);
-  const sm = new SessionManager({ baseDir: path.join(cwd, '.codix', 'sessions') });
+  const sm = new SessionManager({ baseDir: path.join(cwd, '.voked', 'sessions') });
   const rules = await loadRules(cwd);
   const systemPrompt = buildSystemPrompt({
-    identity: 'You are codix. Be concise.',
+    identity: 'You are voked. Be concise.',
     tools: tools.map((t) => `- ${t.schema.name}: ${t.schema.description}`).join('\n'),
     rules: rules.combined,
   });

@@ -15,7 +15,7 @@ function indent(lines: string[], pad: string): string[] {
 
 export function renderBanner(t: Theme, info: { version: string; cwd: string; model: string }): string[] {
   const { c, g } = t;
-  const title = c.bold(c.brand('codix'));
+  const title = c.bold(c.brand('voked'));
   return [
     '',
     ` ${title} ${c.muted(`v${info.version}`)}`,

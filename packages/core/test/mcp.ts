@@ -10,12 +10,12 @@
 import path from 'node:path';
 import os from 'node:os';
 import fs from 'node:fs/promises';
-import { McpManager, registerMcpTools, ToolRegistry } from '@codix/core';
+import { McpManager, registerMcpTools, ToolRegistry } from '@voked/core';
 
 async function main(): Promise<void> {
   console.log('=== MCP Manager 测试 ===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-mcp-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-mcp-'));
   console.log('[setup] cwd:', cwd);
 
   const serverScript = path.resolve('test/mock-mcp-server.mjs');

@@ -1,10 +1,10 @@
 /**
- * 全局类型声明 - 暴露给 window.codix 的 API
+ * 全局类型声明 - 暴露给 window.voked 的 API
  */
 
 declare global {
   interface Window {
-    codix: import('./api').codixAPI;
+    voked: import('./api').vokedAPI;
   }
 }
 

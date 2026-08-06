@@ -22,7 +22,7 @@ import {
   ContextCompressor,
   loadRules,
   buildSystemPrompt,
-} from '@codix/core';
+} from '@voked/core';
 
 const passed: string[] = [];
 const failed: string[] = [];
@@ -47,7 +47,7 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
 async function main(): Promise<void> {
   console.log('=== Suite E: 集成深度测试 ===\n');
 
-  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'codix-e2-'));
+  const cwd = await fs.mkdtemp(path.join(os.tmpdir(), 'voked-e2-'));
   console.log('[setup] cwd:', cwd);
 
   const cfg = await loadMergedConfig(cwd);
@@ -89,11 +89,11 @@ async function main(): Promise<void> {
   console.log('\n[E3] 全局规则文件加载');
   // 写一个全局规则文件
   const os2 = await import('node:os');
-  const rulesPath = path.join(os2.homedir(), '.codix', 'rules.md');
+  const rulesPath = path.join(os2.homedir(), '.voked', 'rules.md');
   const ruleContent = '# Global rule\nAlways respond in 中文. Be concise.';
   await fs.writeFile(rulesPath, ruleContent, 'utf8');
   // 也写一个项目级规则
-  const projectRulesPath = path.join(cwd, '.codix', 'rules.md');
+  const projectRulesPath = path.join(cwd, '.voked', 'rules.md');
   await fs.mkdir(path.dirname(projectRulesPath), { recursive: true });
   const projectRuleContent = '# Project rule\nThis is a test project. Always include "test:" prefix.';
   await fs.writeFile(projectRulesPath, projectRuleContent, 'utf8');
@@ -105,7 +105,7 @@ async function main(): Promise<void> {
 
   // 验证规则能注入到 system prompt
   const sys = buildSystemPrompt({
-    identity: 'You are codix.',
+    identity: 'You are voked.',
     rules: loadedRules.combined,
   });
   assert(sys.includes('Global rule') && sys.includes('Project rule'), '规则被注入到 system prompt');
@@ -119,11 +119,11 @@ async function main(): Promise<void> {
   const registry = createBuiltinRegistry(cfg);
   const tools = registry.list();
   const perm = new PermissionEngine(cfg);
-  const sm = new SessionManager({ baseDir: path.join(cwd, '.codix/sessions') });
+  const sm = new SessionManager({ baseDir: path.join(cwd, '.voked/sessions') });
   const sessE4 = await sm.create({ cwd, title: 'e4 multi-step' });
   const rules = await loadRules(cwd);
   const systemPrompt = buildSystemPrompt({
-    identity: 'You are codix. Be concise.',
+    identity: 'You are voked. Be concise.',
     tools: tools.map((t) => `- ${t.schema.name}: ${t.schema.description}`).join('\n'),
     rules: rules.combined,
   });
