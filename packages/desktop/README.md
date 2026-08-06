@@ -1,6 +1,6 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
-# @voked/desktop
+# voked Desktop
 
 voked's desktop client: an AI Agent client built with **Electron + Vue 3 + Vite**.
 
@@ -41,7 +41,10 @@ cd packages/desktop && npx electron .
 
 ## 2. Packaging (publish to GitHub Releases)
 
-On the **target platform**:
+Prebuilt Windows installers are published on GitHub Releases:
+https://github.com/i-shl/voked/releases
+
+On the **target platform** (only the Windows build is provided prebuilt on Releases; **macOS and Linux installers must be built manually** or via CI):
 
 ```bash
 # Windows

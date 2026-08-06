@@ -21,6 +21,29 @@ voked (a blend of "code" + "ix") is a local-first AI coding agent. You point it 
 
 > **Permission model:** voked runs in "full-auto" mode by default — tool calls execute directly without per-step confirmation.
 
+## Install
+
+### CLI — from npm
+
+```bash
+npm i -g voked
+voked ./your-project-dir     # start inside a project
+voked --config               # create ~/.voked/config.json (then add your API key)
+voked --help
+```
+
+Requires **Node.js ≥ 20**. A global install only pulls CLI runtime deps and does **not** download Electron, so it is fast.
+
+> Prefer the source? `npm i -g github:i-shl/voked` also works (it clones and builds).
+
+### Desktop — from GitHub Releases
+
+Prebuilt installers are published on GitHub Releases:
+
+- **Windows**: download `voked-Setup-x.y.z.exe` (NSIS) from
+  https://github.com/i-shl/voked/releases
+- **macOS / Linux**: native installers must be built on each platform (see "Packaging" below). CI-provided builds may be added later.
+
 ## Supported platforms
 
 | Form | Windows | macOS | Linux |
@@ -151,16 +174,19 @@ voked --list        # list session history
 
 ### Desktop installer
 
-Run on the **corresponding platform with network access** (packaging downloads that platform's Electron binary):
+Prebuilt Windows installers are published on GitHub Releases:
+https://github.com/i-shl/voked/releases
+
+To produce an installer yourself, run the command on the **corresponding platform with network access** (packaging downloads that platform's Electron binary). Only the Windows build is provided prebuilt on Releases; **macOS and Linux installers must be built manually** (or via CI):
 
 ```bash
-# Windows → voked-Setup-x.y.z.exe (NSIS)
+# Windows → voked-Setup-x.y.z.exe (NSIS)  [already on Releases]
 pnpm package:desktop:win
 
-# macOS → voked-x.y.z.dmg
+# macOS → voked-x.y.z.dmg  (build manually on macOS)
 pnpm package:desktop:mac
 
-# Linux → voked-x.y.z.AppImage and .deb
+# Linux → voked-x.y.z.AppImage and .deb  (build manually on Linux)
 pnpm package:desktop:linux
 ```
 

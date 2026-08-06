@@ -1,6 +1,6 @@
 [中文](./README.zh-CN.md) | [English](./README.md)
 
-# @voked/desktop
+# voked Desktop
 
 voked 的桌面端：基于 **Electron + Vue 3 + Vite** 的 AI Agent 客户端。
 
@@ -61,6 +61,16 @@ pnpm package:desktop:linux
 - Linux：`AppImage` 与 `deb`，分类 `Development`。
 
 electron-builder 配置见本目录 `package.json` 的 `build` 字段；`after-pack.cjs` 负责把 pnpm 隔离的依赖复制到打包后的 app 中。
+
+### 桌面端安装包（预构建下载）
+
+> **Windows**：已发布预构建安装包，直接下载即可：
+> https://github.com/i-shl/voked/releases
+> 下载 `voked-Setup-x.y.z.exe` 双击安装。
+>
+> **macOS / Linux**：暂未提供预构建安装包，需在该平台自行打包（见上面的打包命令）。桌面端依赖 Electron 二进制，必须在对应平台上构建。
+
+CLI 版本可直接用 npm 安装：`npm i -g voked`（参见项目根 README）。
 
 ## 三、功能
 

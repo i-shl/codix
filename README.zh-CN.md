@@ -21,6 +21,29 @@ voked（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。
 
 > **权限模式：** voked 默认处于「全自动」模式，工具调用直接执行，无需逐次确认。
 
+## 安装
+
+### CLI —— 从 npm
+
+```bash
+npm i -g voked
+voked ./你的项目目录       # 在项目目录中启动
+voked --config            # 生成 ~/.voked/config.json（随后填入 API Key）
+voked --help
+```
+
+需要 **Node.js ≥ 20**。全局安装只拉取 CLI 运行时依赖，**不会下载 Electron**，因此很快。
+
+> 想从源码装？也可以 `npm i -g github:i-shl/voked`（会克隆并构建）。
+
+### 桌面端 —— 从 GitHub Releases
+
+预构建的安装包发布在 GitHub Releases：
+
+- **Windows**：在以下地址下载 `voked-Setup-x.y.z.exe`（NSIS 安装包）
+  https://github.com/i-shl/voked/releases
+- **macOS / Linux**：原生安装包必须在对应平台上手动构建（见下方「打包」章节），后续可能会通过 CI 提供。
+
 ## 支持的平台
 
 | 形态 | Windows | macOS | Linux |
@@ -151,16 +174,19 @@ voked --list        # 列出历史会话
 
 ### 桌面端安装包
 
-在 **有网络的对应平台** 上执行（打包会下载该平台的 Electron 二进制）：
+预构建的 Windows 安装包已发布在 GitHub Releases：
+https://github.com/i-shl/voked/releases
+
+要自己生成安装包，需在 **对应平台 + 有网络** 的环境下执行（打包会下载该平台的 Electron 二进制）。目前 **Releases 上仅提供 Windows 构建**；**macOS 与 Linux 的安装包需手动构建**（或通过 CI）：
 
 ```bash
-# Windows → 生成 voked-Setup-x.y.z.exe（NSIS）
+# Windows → voked-Setup-x.y.z.exe（NSIS）  [已在 Releases 提供]
 pnpm package:desktop:win
 
-# macOS → 生成 voked-x.y.z.dmg
+# macOS → voked-x.y.z.dmg  （在 macOS 上手动构建）
 pnpm package:desktop:mac
 
-# Linux → 生成 voked-x.y.z.AppImage 与 .deb
+# Linux → voked-x.y.z.AppImage 与 .deb  （在 Linux 上手动构建）
 pnpm package:desktop:linux
 ```
 

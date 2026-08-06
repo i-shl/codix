@@ -1,12 +1,25 @@
 [中文](./README.zh-CN.md) | [English](./README.md)
 
-# @voked/cli
+# voked CLI
 
 voked 的命令行客户端：一个 **纯 ANSI 手写 TUI**（不依赖 ink / react 等终端框架），运行在 Node.js ≥ 20 上，Windows / macOS / Linux 通用。
 
 底层复用 `@voked/core` 核心引擎。
 
-## 一、从 GitHub 直接安装（推荐，无需 clone）
+## 安装
+
+```bash
+npm i -g voked
+voked ./你的项目目录       # 在项目目录中启动
+voked --config            # 生成 ~/.voked/config.json（随后填入 API Key）
+```
+
+需要 **Node.js ≥ 20**。全局安装只拉取 CLI 运行时依赖，**不会下载 Electron**。
+
+> 桌面端（Electron + Vue 3）以预构建安装包形式发布在 GitHub Releases：
+> https://github.com/i-shl/voked/releases （Windows 已提供；macOS / Linux 需手动构建）。
+
+## 一、从 GitHub 直接安装（无需 clone）
 
 ```bash
 npm i -g github:i-shl/voked

@@ -4,6 +4,7 @@
   "description": "voked Desktop - Electron + Vue3 AI agent client.",
   "main": "./dist-electron/main.js",
   "author": "voked",
+  "repository": "git+https://github.com/i-shl/voked.git",
   "scripts": {
     "dev:renderer": "vite",
     "dev:electron": "tsc -p tsconfig.electron.json --watch",
@@ -81,6 +82,11 @@
     "compression": "maximum",
     "nodeGypRebuild": false,
     "buildDependenciesFromSource": false,
-    "afterPack": "./after-pack.cjs"
+    "afterPack": "./after-pack.cjs",
+    "publish": {
+      "provider": "github",
+      "owner": "i-shl",
+      "repo": "voked"
+    }
   }
 }

@@ -1,12 +1,25 @@
 [English](./README.md) | [中文](./README.zh-CN.md)
 
-# @voked/cli
+# voked CLI
 
 voked's command-line client: a **hand-written ANSI TUI** (no ink / react style terminal framework), running on Node.js ≥ 20, portable across Windows / macOS / Linux.
 
 It reuses the `@voked/core` engine underneath.
 
-## 1. Install directly from GitHub (recommended, no clone)
+## Install
+
+```bash
+npm i -g voked
+voked ./your-project-dir     # start inside a project
+voked --config               # create ~/.voked/config.json (then add your API key)
+```
+
+Requires **Node.js ≥ 20**. A global install only pulls CLI runtime deps and does **not** download Electron.
+
+> The desktop client (Electron + Vue 3) is distributed as a prebuilt installer on
+> GitHub Releases: https://github.com/i-shl/voked/releases (Windows available; macOS / Linux built manually).
+
+## 1. Install from GitHub (no clone)
 
 ```bash
 npm i -g github:i-shl/voked

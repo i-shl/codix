@@ -1,34 +1,36 @@
+[English](./README.md) | [中文](./README.zh-CN.md)
+
 # @voked/core
 
-共享核心引擎。所有 CLI/Desktop 都依赖它。
+Shared core engine. Both the CLI and Desktop depend on it.
 
-## 模块
+## Modules
 
-- **config** —— 配置加载（全局+项目+环境变量合并）
-- **models** —— 多 provider 模型适配层（OpenAI 兼容、Anthropic、Gemini）
-- **tools** —— 内置工具（Read/Write/Edit/Bash/Glob/Grep/LS/WebFetch/WebSearch/TodoWrite）
-- **permissions** —— 权限引擎（默认全自动，工具调用直接执行）
-- **mcp** —— MCP 客户端（stdio / sse / http）
-- **skills** —— Skill 系统（manifest 协议、安装器、加载器）
-- **sessions** —— 会话持久化（JSON 文件存储）
-- **rules** —— 全局/项目规则加载
-- **agent** —— Agent 循环（ReAct 风格）+ 上下文压缩
-- **utils** —— fs/shell/common 工具
+- **config** —— config loading (global + project + env merge)
+- **models** —— multi-provider model adapter layer (OpenAI-compatible, Anthropic, Gemini)
+- **tools** —— built-in tools (Read/Write/Edit/Bash/Glob/Grep/LS/WebFetch/WebSearch/TodoWrite)
+- **permissions** —— permission engine (full-auto by default; tool calls execute directly)
+- **mcp** —— MCP client (stdio / sse / http)
+- **skills** —— Skill system (manifest protocol, installer, loader)
+- **sessions** —— session persistence (JSON file storage)
+- **rules** —— global / project rule loading
+- **agent** —— Agent loop (ReAct-style) + context compaction
+- **utils** —— fs / shell / common utilities
 
-## 用法
+## Usage
 
 ```typescript
 import { createAgentContext, runAgent } from '@voked/core';
 
 const ctx = await createAgentContext('/path/to/project');
-const handle = runAgent(ctx, sessionId, { text: '你好' }, {
+const handle = runAgent(ctx, sessionId, { text: 'Hello' }, {
   onEvent: (ev) => { if (ev.type === 'text_delta') process.stdout.write(ev.text); },
   onPermissionAsk: async (req) => 'allow',
 });
 await handle.promise;
 ```
 
-## 独立使用
+## Build standalone
 
 ```bash
 pnpm build
