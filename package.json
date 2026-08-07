@@ -1,6 +1,6 @@
 {
   "name": "voked",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": false,
   "description": "voked - AI Agent CLI + Electron Desktop, supports tools, MCP, skills, multi-model, sessions, permissions.",
   "type": "module",
