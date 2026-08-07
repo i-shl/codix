@@ -2,6 +2,10 @@
 
 # voked
 
+<p align="center">
+  <img src="packages/desktop/build/icon.png" alt="voked logo" width="96" />
+</p>
+
 voked 是一个 AI Agent，同时提供**命令行（CLI）**与**桌面端（Electron + Vue 3）**两种形态，底层共享同一套核心引擎 `@voked/core`。
 
 ## voked 是什么？
@@ -20,6 +24,20 @@ voked（取 "code" 与 "ix" 组合）是一个本地运行的 AI 编程助手。
 - 上下文压缩：超过阈值自动压缩
 
 > **权限模式：** voked 默认处于「全自动」模式，工具调用直接执行，无需逐次确认。
+
+## 界面演示
+
+### 桌面端（Electron + Vue 3）
+
+| | |
+|---|---|
+| ![桌面端演示 1](docs/screenshots/desktop-demo-1.png) | ![桌面端演示 2](docs/screenshots/desktop-demo-2.png) |
+
+### 命令行（ANSI 终端界面）
+
+| | |
+|---|---|
+| ![命令行演示 1](docs/screenshots/cli-demo-1.png) | ![命令行演示 2](docs/screenshots/cli-demo-2.png) |
 
 ## 安装
 

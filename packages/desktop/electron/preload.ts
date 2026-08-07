@@ -14,8 +14,8 @@ const api = {
 
   listSessions: (cwd: string) => ipcRenderer.invoke('voked:listSessions', cwd),
   createSession: (opts: { cwd: string; title?: string }) => ipcRenderer.invoke('voked:createSession', opts),
-  loadSession: (id: string) => ipcRenderer.invoke('voked:loadSession', id),
-  deleteSession: (id: string) => ipcRenderer.invoke('voked:deleteSession', id),
+  loadSession: (id: string, cwd: string) => ipcRenderer.invoke('voked:loadSession', { id, cwd }),
+  deleteSession: (id: string, cwd: string) => ipcRenderer.invoke('voked:deleteSession', { id, cwd }),
 
   loadConfig: (cwd: string) => ipcRenderer.invoke('voked:loadConfig', cwd),
   loadGlobalConfig: () => ipcRenderer.invoke('voked:loadGlobalConfig'),

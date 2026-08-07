@@ -113,7 +113,14 @@ function clear(): void {
 
 async function loadSession(id: string): Promise<void> {
   if (!cwd.value) return;
-  const s = (await window.voked.loadSession(id)) as Session & { messages: Message[] };
+  // 切换到「不同」会话：清掉上一个会话的排队消息与流式瞬态，
+  // 避免上一个会话的排队项残留/被错发到新会话，也避免旧流式块串到新会话屏幕上。
+  // 注意：afterTurn() 用同一 id 重载当前会话时不能清，否则正在排队的消息会丢。
+  if (currentSession.value?.id !== id) {
+    clear();
+    clearQueue();
+  }
+  const s = (await window.voked.loadSession(id, cwd.value)) as Session & { messages: Message[] };
   if (s) {
     currentSession.value = {
       id: s.id,
@@ -130,10 +137,12 @@ async function loadSession(id: string): Promise<void> {
 }
 
 async function deleteSession(id: string): Promise<void> {
-  await window.voked.deleteSession(id);
+  await window.voked.deleteSession(id, cwd.value);
   if (currentSession.value?.id === id) {
     currentSession.value = null;
     messages.value = [];
+    clear();
+    clearQueue();
   }
   await refreshSessions();
 }
@@ -143,7 +152,7 @@ async function afterTurn(): Promise<void> {
   const cs = currentSession.value;
   if (!cs) return;
   try {
-    const s = (await window.voked.loadSession(cs.id)) as Session & { messages: Message[] };
+    const s = (await window.voked.loadSession(cs.id, cwd.value)) as Session & { messages: Message[] };
     messages.value = s.messages ?? [];
     currentSession.value = {
       ...cs,
@@ -173,34 +182,39 @@ async function runTurn(input: PendingInput): Promise<void> {
   streamingText.value = '';
   streamingThinking.value = '';
   streamingTools.value = [];
-  try {
-    if (input.rerun) {
-      // 编辑重发 / 重新回复：本地先截断到该 user 消息，再让 core 重跑覆盖旧回复
-      const idx = messages.value.findIndex((m) => m.id === input.rerun!.userMessageId);
-      if (idx >= 0) {
-        const kept = messages.value.slice(0, idx + 1).map((m) => ({ ...m }));
-        if (input.rerun!.text !== undefined) kept[idx].content = input.rerun!.text as Message['content'];
-        messages.value = kept;
+    try {
+      if (input.rerun) {
+        // 编辑重发 / 重新回复：本地先截断到该 user 消息，再让 core 重跑覆盖旧回复
+        const idx = messages.value.findIndex((m) => m.id === input.rerun!.userMessageId);
+        if (idx >= 0) {
+          const kept = messages.value.slice(0, idx + 1).map((m) => ({ ...m }));
+          if (input.rerun!.text !== undefined) kept[idx].content = input.rerun!.text as Message['content'];
+          messages.value = kept;
+        }
+        await window.voked.rerunTurn({
+          cwd: cwd.value,
+          sessionId: sid,
+          userMessageId: input.rerun!.userMessageId,
+          text: input.rerun!.text,
+        });
+      } else {
+        if (input.text || input.images?.length || input.files?.length) {
+          messages.value = [...messages.value, buildUserMessage(input)];
+        }
+        await window.voked.run({ cwd: cwd.value, sessionId: sid, userInput: input });
       }
-      await window.voked.rerunTurn({
-        cwd: cwd.value,
-        sessionId: sid,
-        userMessageId: input.rerun!.userMessageId,
-        text: input.rerun!.text,
-      });
-    } else {
-      if (input.text || input.images?.length || input.files?.length) {
-        messages.value = [...messages.value, buildUserMessage(input)];
-      }
-      await window.voked.run({ cwd: cwd.value, sessionId: sid, userInput: input });
+      await afterTurn();
+      // 一轮彻底结束：清掉流式瞬态，否则已落盘的 assistant 消息会和残留的流式块
+      // 叠加，看起来像「同一条消息 AI 回复了两条」
+      streamingText.value = '';
+      streamingThinking.value = '';
+      streamingTools.value = [];
+    } finally {
+      activeRunSessionId.value = null;
     }
-    await afterTurn();
-  } finally {
-    activeRunSessionId.value = null;
-  }
 }
 
-const { queue, busy, send: sendTurn, cancel: cancelQueued } = useTurnQueue<PendingInput>({
+const { queue, busy, send: sendTurn, cancel: cancelQueued, clear: clearQueue } = useTurnQueue<PendingInput>({
   runTurn,
   before: ensureSession,
   onError: (e) => flashError(t('ui.error') + errMsg(e)),

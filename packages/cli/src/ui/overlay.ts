@@ -128,3 +128,54 @@ export function renderConfirm(p: ConfirmProps, t: Theme, width: number): string[
 export function padTo(s: string, w: number): string {
   return padEnd(s, w);
 }
+
+// ===================== 多步表单（/connect 向导） =====================
+
+export interface FormField {
+  key: string;
+  label: string;
+  value: string;
+  placeholder?: string;
+  /** 密码类字段：显示时打码 */
+  secret?: boolean;
+  /** 有 options 即为「选择型」字段，否则为「文本输入型」 */
+  options?: { value: string; label: string }[];
+}
+
+export interface FormState {
+  title: string;
+  fields: FormField[];
+  /** 当前字段下标 */
+  index: number;
+  /** 选择型字段的游标 */
+  selectIndex: number;
+}
+
+/** 渲染当前这一步：标题 + 步骤计数 + 问题 + 选项/输入框 + 提示 */
+export function renderForm(f: FormState, t: Theme, width: number): string[] {
+  const w = Math.max(24, width);
+  const out: string[] = [];
+  const cur = f.fields[f.index];
+  const step = T('connect.step', { i: f.index + 1, n: f.fields.length });
+  out.push(`  ${t.c.bold(t.c.brand(f.title))} ${t.c.muted(step)}`);
+  out.push(`  ${cur.label}`);
+  out.push('');
+
+  if (cur.options) {
+    cur.options.forEach((opt, i) => {
+      const sel = i === f.selectIndex;
+      const pointer = sel ? t.c.brand(t.g.caret) : ' ';
+      const label = sel ? t.c.bold(opt.label) : opt.label;
+      out.push(` ${pointer} ${label}`);
+    });
+  } else {
+    const display = cur.secret ? '*'.repeat(cur.value.length) : cur.value;
+    const show = display ? display : t.c.muted(cur.placeholder ?? '');
+    out.push(`  ${t.c.brand('>')} ${show}${t.c.brand('_')}`);
+  }
+
+  out.push('');
+  out.push(`  ${t.c.muted(T('hint.form'))}`);
+  out.push('');
+  return out;
+}

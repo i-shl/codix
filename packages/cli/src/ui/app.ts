@@ -32,8 +32,10 @@ import {
   renderOverlay,
   renderConfirm,
   filterItems,
+  renderForm,
   type OverlayItem,
   type OverlayState,
+  type FormState,
 } from './overlay.js';
 import {
   renderBanner,
@@ -67,6 +69,14 @@ import {
   type AgentRunHandle,
   type vokedContext,
 } from '../core.js';
+import {
+  loadGlobalConfig,
+  saveGlobalConfig,
+  type GlobalConfig,
+  type ModelConfig,
+  type ModelProvider,
+  type ProviderConfig,
+} from '../../../core/dist/index.js';
 
 export interface AppOptions {
   cwd: string;
@@ -106,6 +116,7 @@ export class App {
 
   private overlay: OverlayState | null = null;
   private confirm: ConfirmState | null = null;
+  private form: FormState | null = null;
 
   private queue: string[] = [];
   private streamBuf = '';
@@ -153,6 +164,7 @@ export class App {
     try {
       this.ctx = await createContext(this.opts.cwd, {
         modelKey: this.opts.modelKey,
+        allowNoModel: true,
       });
     } catch (e) {
       this.screen.writeBody(renderError((e as Error).message, this.theme, this.screen.width));
@@ -165,9 +177,13 @@ export class App {
 
     await this.initSession();
 
+    if (!this.ctx.model) {
+      this.screen.writeBody(renderSystem(t('cli.noModelHint'), this.theme, this.screen.width));
+    }
+
     this.screen.writeBody(
       renderSystem(
-        t('cli.toolsReady', { model: this.ctx.model.config.model, count: this.ctx.tools.length }),
+        t('cli.toolsReady', { model: this.ctx.model?.config?.model ?? '—', count: this.ctx.tools.length }),
         this.theme,
         this.screen.width
       )
@@ -198,7 +214,7 @@ export class App {
     const s = await this.ctx.sessions.create({
       cwd: this.ctx.cwd,
       title: t('session.newTitle'),
-      model: this.ctx.model.config.model,
+      model: this.currentModel(),
     });
     this.sessionId = s.id;
   }
@@ -302,12 +318,18 @@ export class App {
   private statusText(): string {
     const { g } = this.theme;
     const cwd = shortenPath(this.ctx?.cwd ?? this.opts.cwd);
-    const model = this.ctx?.model.config.model ?? '—';
+    const model = this.currentModel();
     return `${cwd} ${g.dot} ${model}`;
+  }
+
+  /** 当前模型 id；尚未配置模型时返回占位符 */
+  private currentModel(): string {
+    return this.ctx?.model?.config?.model ?? '—';
   }
 
   private hintText(): string {
     if (this.confirm) return t('hint.confirm');
+    if (this.form) return t('hint.form');
     if (this.overlay) return t('hint.overlay');
     if (this.phase === 'running') return t('hint.running');
     if (this.multiline) return t('hint.multiline');
@@ -348,8 +370,21 @@ export class App {
           w
         )
       );
+    } else if (this.form) {
+      above.push(...renderForm(this.form, this.theme, w));
     } else if (this.overlay) {
       above.push(...renderOverlay(this.overlay, this.theme, w));
+    }
+
+    if (this.form || this.confirm) {
+      // 向导 / 确认期间隐藏聊天输入框，所有输入只进表单，避免错位到聊天框
+      const hint = this.form ? t('hint.form') : t('hint.confirm');
+      const left = this.theme.c.muted(this.statusText());
+      const right = this.theme.c.muted(hint);
+      const gap = Math.max(1, w - strWidth(left) - strWidth(right));
+      this.screen.setFooter([...above, ` ${left}${' '.repeat(Math.max(0, gap - 1))}${right}`], null);
+      if (now) this.screen.flushNow();
+      return;
     }
 
     const frame = renderComposer({
@@ -416,6 +451,15 @@ export class App {
   private onPaste = (p: PasteEvent): void => {
     const text = p.text.replace(/\r\n?/g, '\n');
     if (this.confirm) return;
+    if (this.form) {
+      const field = this.form.fields[this.form.index];
+      if (field && !field.options) {
+        // 把粘贴内容送进当前文本字段（Key / URL / 名称都是单行，折叠换行）
+        field.value += text.replace(/\n/g, ' ');
+        this.render(true);
+      }
+      return;
+    }
     if (this.overlay?.ownFilter) {
       this.overlay.filter += text.replace(/\n/g, ' ');
       this.refreshOverlayItems();
@@ -446,12 +490,17 @@ export class App {
     }
 
     if (this.confirm) return this.confirmKey(k);
+    if (this.form) return this.formKey(k);
     if (this.overlay && this.overlayKey(k)) return;
 
     this.editorKey(k);
   }
 
   private onCtrlC(): void {
+    if (this.form) {
+      this.cancelForm();
+      return;
+    }
     if (this.confirm) {
       this.resolveConfirm('deny');
       return;
@@ -503,7 +552,7 @@ export class App {
       renderBanner(this.theme, {
         version: this.opts.version,
         cwd: this.ctx?.cwd ?? this.opts.cwd,
-        model: this.ctx?.model.config.model ?? '—',
+        model: this.ctx?.model?.config?.model ?? '—',
       })
     );
     this.render(true);
@@ -776,8 +825,7 @@ export class App {
     this.render(true);
   }
 
-  private resolveConfirm(v: 'allow' | 'deny' | 'allowAll'): void {
-    const c = this.confirm;
+  private resolveConfirm(v: 'allow' | 'deny' | 'allowAll'): void {    const c = this.confirm;
     if (!c) return;
     this.confirm = null;
     const label = v === 'allow' ? t('permission.allowed') : v === 'allowAll' ? t('permission.allowedAll') : t('permission.denied');
@@ -901,13 +949,13 @@ export class App {
       setModel: async (key) => {
         applyModel(this.ctx, key);
         await persistPreference({ defaultModel: key }).catch(() => undefined);
-        return t('model.switched', { key, model: this.ctx.model.config.model });
+        return t('model.switched', { key, model: this.currentModel() });
       },
       newSession: async (title) => {
         const s = await this.ctx.sessions.create({
           cwd: this.ctx.cwd,
           title: title || t('session.newTitle'),
-          model: this.ctx.model.config.model,
+          model: this.currentModel(),
         });
         this.sessionId = s.id;
         return t('session.created', { title: s.title, id: s.id.slice(0, 8) });
@@ -925,11 +973,11 @@ export class App {
         const st = await fs.stat(target);
         if (!st.isDirectory()) throw new Error(t('session.notDir'));
         await this.ctx.mcp.disconnectAll().catch(() => undefined);
-        this.ctx = await createContext(target, { modelKey: this.ctx.config.defaultModel });
+        this.ctx = await createContext(target, { modelKey: this.ctx.config.defaultModel, allowNoModel: true });
         const s = await this.ctx.sessions.create({
           cwd: target,
           title: path.basename(target),
-          model: this.ctx.model.config.model,
+          model: this.currentModel(),
         });
         this.sessionId = s.id;
         return target;
@@ -944,6 +992,7 @@ export class App {
     if (res.modal === 'help') this.pushSystem(helpText());
     if (res.modal === 'model') this.openModelPicker(sc);
     if (res.modal === 'session') await this.openSessionPicker(sc);
+    if (res.modal === 'connect') this.openConnectWizard(res.connectKind ?? 'provider');
   }
 
   private openModelPicker(sc: SlashContext): void {
@@ -1013,6 +1062,173 @@ export class App {
     this.render(true);
   }
 
+  // ---- /connect 交互向导 ----
+
+  private openConnectWizard(kind: 'provider' | 'mcp'): void {
+    if (kind === 'mcp') {
+      this.pushSystem(t('connect.mcpNotImpl'));
+      this.render(true);
+      return;
+    }
+
+    const typeOptions = [
+      { value: 'openai-compatible', label: t('connect.type.openai-compatible') },
+      { value: 'openai-responses', label: t('connect.type.openai-responses') },
+      { value: 'anthropic', label: t('connect.type.anthropic') },
+      { value: 'gemini', label: t('connect.type.gemini') },
+    ];
+    const yesNo = [
+      { value: 'yes', label: t('connect.defaultYes') },
+      { value: 'no', label: t('connect.defaultNo') },
+    ];
+
+    this.form = {
+      title: t('connect.providerTitle'),
+      index: 0,
+      selectIndex: 0,
+      fields: [
+        { key: 'type', label: t('connect.chooseType'), value: 'openai-compatible', options: typeOptions },
+        { key: 'label', label: t('connect.label'), value: '', placeholder: 'DeepSeek' },
+        { key: 'apiKey', label: t('connect.apiKey'), value: '', placeholder: 'sk-...', secret: true },
+        { key: 'baseURL', label: t('connect.baseURL'), value: '', placeholder: 'https://api.deepseek.com/v1' },
+        { key: 'model', label: t('connect.model'), value: '', placeholder: 'deepseek-chat' },
+        { key: 'default', label: t('connect.setDefault'), value: 'yes', options: yesNo },
+      ],
+    };
+    this.render(true);
+  }
+
+  private formKey(k: Key): void {
+    const f = this.form;
+    if (!f) return;
+    const field = f.fields[f.index];
+
+    if (k.name === 'escape') {
+      this.cancelForm();
+      return;
+    }
+
+    if (field.options) {
+      const n = field.options.length;
+      if (k.name === 'up') f.selectIndex = (f.selectIndex - 1 + n) % n;
+      else if (k.name === 'down') f.selectIndex = (f.selectIndex + 1) % n;
+      else if (k.name === 'pageup') f.selectIndex = Math.max(0, f.selectIndex - 5);
+      else if (k.name === 'pagedown') f.selectIndex = Math.min(n - 1, f.selectIndex + 5);
+      else if (k.name === 'enter' || k.name === 'tab') {
+        field.value = field.options[f.selectIndex].value;
+        this.advanceForm();
+        return;
+      } else {
+        return;
+      }
+      this.render(true);
+      return;
+    }
+
+    // 文本输入型
+    if (k.name === 'backspace') {
+      field.value = [...field.value].slice(0, -1).join('');
+    } else if (k.name === 'enter') {
+      this.advanceForm();
+      return;
+    } else if (k.name === 'char' && k.ch && !k.ctrl && !k.meta) {
+      field.value += k.ch;
+    } else {
+      return;
+    }
+    this.render(true);
+  }
+
+  private advanceForm(): void {
+    const f = this.form;
+    if (!f) return;
+    if (f.index < f.fields.length - 1) {
+      f.index++;
+      const nf = f.fields[f.index];
+      if (nf.options) {
+        const i = nf.options.findIndex((o) => o.value === nf.value);
+        f.selectIndex = i >= 0 ? i : 0;
+      }
+      this.render(true);
+      return;
+    }
+    // 最后一步：收集并保存
+    const values: Record<string, string> = {};
+    for (const fld of f.fields) values[fld.key] = fld.value;
+    this.form = null;
+    void this.finishConnect(values);
+  }
+
+  private cancelForm(): void {
+    this.form = null;
+    this.showToast(t('connect.cancel'), 'info', 2000);
+    this.render(true);
+  }
+
+  private async finishConnect(values: Record<string, string>): Promise<void> {
+    try {
+      const label = values.label.trim();
+      const model = values.model.trim();
+      const apiKey = values.apiKey.trim();
+      const baseURL = values.baseURL.trim();
+      const type = values.type as ModelProvider;
+
+      if (!label) throw new Error(t('connect.invalid', { msg: t('connect.label') }));
+      if (!model) throw new Error(t('connect.invalid', { msg: t('connect.model') }));
+      // 把空字符串当成「未填写」：
+      if (!apiKey && !baseURL) {
+        // 允许两者都空（走协议默认），但至少提示一下？这里放行。
+      }
+
+      const pid = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'provider';
+      const modelKey = `${pid}:${model}`;
+
+      const global = await loadGlobalConfig();
+      global.providers = global.providers ?? {};
+      global.models = global.models ?? {};
+
+      const provider: ProviderConfig = {
+        label,
+        type,
+        apiKey: apiKey || undefined,
+        baseURL: baseURL || undefined,
+      };
+      const mcfg: ModelConfig = {
+        provider: type,
+        providerId: pid,
+        model,
+        apiKey: apiKey || undefined,
+        baseURL: baseURL || undefined,
+      };
+
+      const existed = !!global.providers[pid];
+      global.providers[pid] = provider;
+      global.models[modelKey] = mcfg;
+      // 没有合法默认模型时把新模型设为默认；或用户明确要求
+      if (values.default === 'yes' || !global.defaultModel || global.defaultModel === '__env__') {
+        global.defaultModel = modelKey;
+      }
+
+      await saveGlobalConfig(global);
+
+      // 让当前会话立即生效：刷新内存中的配置并切换 adapter
+      this.ctx.config = global;
+      if (global.defaultModel) {
+        try {
+          applyModel(this.ctx, global.defaultModel);
+        } catch {
+          /* 切换失败不应阻塞保存结果 */
+        }
+      }
+
+      const saved = existed ? t('connect.providerExists', { id: pid }) : '';
+      this.pushSystem(t('connect.saved', { label, model, key: modelKey }) + (saved ? `\n${saved}` : ''));
+    } catch (e) {
+      this.pushError((e as Error).message);
+    }
+    this.render(true);
+  }
+
   // ---- 一轮对话 ----
 
   private commitAssistant(): void {
@@ -1029,6 +1245,14 @@ export class App {
 
   private async runTurn(text: string): Promise<void> {
     const w = this.screen.width;
+
+    if (!this.ctx.model) {
+      this.screen.writeBody(renderUser(text, this.theme, w));
+      this.pushSystem(t('cli.noModelHint'));
+      this.render(true);
+      return;
+    }
+
     this.screen.writeBody(renderUser(text, this.theme, w));
 
     this.phase = 'running';

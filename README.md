@@ -2,6 +2,10 @@
 
 # voked
 
+<p align="center">
+  <img src="packages/desktop/build/icon.png" alt="voked logo" width="96" />
+</p>
+
 voked is an AI Agent that ships both a **command-line (CLI)** and a **desktop client (Electron + Vue 3)**, sharing one core engine `@voked/core`.
 
 ## What is voked?
@@ -20,6 +24,20 @@ voked (a blend of "code" + "ix") is a local-first AI coding agent. You point it 
 - Context compaction: auto-compress beyond a threshold
 
 > **Permission model:** voked runs in "full-auto" mode by default — tool calls execute directly without per-step confirmation.
+
+## Screenshots
+
+### Desktop (Electron + Vue 3)
+
+| | |
+|---|---|
+| ![Desktop demo 1](docs/screenshots/desktop-demo-1.png) | ![Desktop demo 2](docs/screenshots/desktop-demo-2.png) |
+
+### CLI (ANSI terminal UI)
+
+| | |
+|---|---|
+| ![CLI demo 1](docs/screenshots/cli-demo-1.png) | ![CLI demo 2](docs/screenshots/cli-demo-2.png) |
 
 ## Install
 

@@ -49,17 +49,23 @@ export interface AgentContext {
 
 export async function createAgentContext(
   cwd: string,
-  opts: { modelKey?: string } = {}
+  opts: { modelKey?: string; allowNoModel?: boolean } = {}
 ): Promise<AgentContext> {
   const config = await loadMergedConfig(cwd);
   const defaultKey = opts.modelKey ?? config.defaultModel ?? Object.keys(config.models)[0];
-  if (!defaultKey || !config.models[defaultKey]) {
+  let model: ModelAdapter;
+  if (defaultKey && config.models[defaultKey]) {
+    const modelCfg = resolveModelConfig(config.models[defaultKey], config.providers);
+    model = createAdapter({ ...modelCfg, provider: modelCfg.provider ?? inferProvider(modelCfg.model) });
+  } else if (opts.allowNoModel) {
+    // 允许无模型启动（CLI 交互式配置场景）：ctx.model 为 null，
+    // 调用方需在真正发起对话前确保已配置模型。
+    model = null as unknown as ModelAdapter;
+  } else {
     throw new Error(
       '没有配置模型。请先在 ~/.voked/config.json 中配置 models，或设置环境变量 voked_API_KEY + voked_MODEL'
     );
   }
-  const modelCfg = resolveModelConfig(config.models[defaultKey], config.providers);
-  const model = createAdapter({ ...modelCfg, provider: modelCfg.provider ?? inferProvider(modelCfg.model) });
 
   const registry = createBuiltinRegistry(config);
   const mcp = new McpManager();

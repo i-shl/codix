@@ -6,11 +6,21 @@ import path from 'node:path';
 import process from 'node:process';
 import fs from 'node:fs/promises';
 import os from 'node:os';
+import { createRequire } from 'node:module';
 import { loadGlobalConfig, saveGlobalConfig, SessionManager, setLang, resolveLang, t } from '../../core/dist/index.js';
 import { cli } from './cli-args.js';
 import { App } from './ui/app.js';
 
-const VERSION = '0.1.0';
+/** 版本号从 cli 的 package.json 读取，避免与发布版本脱节 */
+const VERSION = (() => {
+  try {
+    const require = createRequire(import.meta.url);
+    const pkg = require('../package.json') as { version?: string };
+    return pkg.version ?? '0.0.0';
+  } catch {
+    return '0.0.0';
+  }
+})();
 
 /** 在进入交互界面前确定界面语言：--lang > 环境变量 > 配置 > 默认(中文) */
 function applyLanguage(): void {

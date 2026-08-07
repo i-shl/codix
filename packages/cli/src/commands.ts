@@ -37,6 +37,7 @@ export const SLASH_COMMANDS: SlashCommand[] = [
   { cmd: 'install', description: t('cmd.install.desc'), usage: '/install <url|npm:|git:|local:>', needsArgs: true },
   { cmd: 'rules', description: t('cmd.rules.desc') },
   { cmd: 'config', description: t('cmd.config.desc'), usage: '/config [show|path]' },
+  { cmd: 'connect', description: t('cmd.connect.desc'), usage: '/connect <provider>', needsArgs: true },
   { cmd: 'status', description: t('cmd.status.desc') },
   { cmd: 'clear', description: t('cmd.clear.desc') },
   { cmd: 'exit', aliases: ['quit', 'q'], description: t('cmd.exit.desc') },
@@ -146,7 +147,7 @@ export interface SlashContext {
   exit: () => void;
 }
 
-export type SlashModal = 'model' | 'session' | 'help';
+export type SlashModal = 'model' | 'session' | 'help' | 'connect';
 
 export interface SlashResult {
   /** 输出到正文的普通消息 */
@@ -155,6 +156,8 @@ export interface SlashResult {
   error?: string;
   /** 打开某个浮层 */
   modal?: SlashModal;
+  /** connect 浮层的具体类型 */
+  connectKind?: 'provider' | 'mcp';
   /** 清屏 */
   clear?: boolean;
 }
@@ -284,6 +287,14 @@ export async function handleSlash(line: string, sc: SlashContext): Promise<Slash
       for (const m of Object.values(safe.models ?? {})) if (m.apiKey) m.apiKey = '***';
       for (const p of Object.values(safe.providers ?? {})) if (p.apiKey) p.apiKey = '***';
       return { message: '```json\n' + JSON.stringify(safe, null, 2) + '\n```' };
+    }
+
+    case 'connect': {
+      const sub = (rest[0] ?? '').toLowerCase();
+      if (sub === 'mcp') return { modal: 'connect', connectKind: 'mcp' };
+      // provider 或空（空时默认当作 provider）
+      if (sub === '' || sub === 'provider') return { modal: 'connect', connectKind: 'provider' };
+      return { error: t('connect.usage') };
     }
 
     case 'status': {

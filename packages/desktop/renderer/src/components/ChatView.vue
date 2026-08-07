@@ -269,10 +269,6 @@ const showStreaming = computed(() => props.busy || hasStreamingContent.value);
               <MarkdownView :source="turn.ai.text" />
             </div>
           </div>
-          <div v-else-if="turn.ai.text" class="content">
-            <MarkdownView :source="turn.ai.text" />
-          </div>
-
           <template v-for="(tc, i) in turn.ai.toolCalls" :key="'tc' + i">
             <div class="tool-block">
               <div class="tool-head">
@@ -293,6 +289,11 @@ const showStreaming = computed(() => props.busy || hasStreamingContent.value);
               <pre class="tr-body">{{ r.content }}</pre>
             </div>
           </template>
+
+          <!-- 最终回答放在工具执行信息之后（避免被夹在思考与工具之间） -->
+          <div v-if="!turn.ai.synthetic && turn.ai.text" class="content">
+            <MarkdownView :source="turn.ai.text" />
+          </div>
 
           <div class="msg-actions">
             <button class="ma-btn" @click="copyAI(turn.ai)">

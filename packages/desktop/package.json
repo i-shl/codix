@@ -1,6 +1,6 @@
 {
   "name": "@voked/desktop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "voked Desktop - Electron + Vue3 AI agent client.",
   "main": "./dist-electron/main.js",
   "author": "voked",
@@ -78,7 +78,7 @@
       ],
       "category": "Development"
     },
-    "asar": true,
+    "asar": false,
     "compression": "maximum",
     "nodeGypRebuild": false,
     "buildDependenciesFromSource": false,

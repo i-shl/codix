@@ -192,14 +192,17 @@ ipcMain.handle('voked:createSession', async (_e: any, opts: { cwd: string; title
   return await sm.create({ cwd: opts.cwd, title: opts.title, model: undefined });
 });
 
-ipcMain.handle('voked:loadSession', async (_e: any, id: string): Promise<any> => {
+ipcMain.handle('voked:loadSession', async (_e: any, args: { id: string; cwd: string }): Promise<any> => {
   const { SessionManager } = await core();
-  return new SessionManager().load(id);
+  // 必须和 createSession/listSessions/run 使用同一个 cwd 目录，否则会读到 HOME 下的默认目录而找不到会话
+  const baseDir = path.join(args.cwd, '.voked', 'sessions');
+  return new SessionManager({ baseDir }).load(args.id);
 });
 
-ipcMain.handle('voked:deleteSession', async (_e: any, id: string): Promise<void> => {
+ipcMain.handle('voked:deleteSession', async (_e: any, args: { id: string; cwd: string }): Promise<void> => {
   const { SessionManager } = await core();
-  await new SessionManager().delete(id);
+  const baseDir = path.join(args.cwd, '.voked', 'sessions');
+  await new SessionManager({ baseDir }).delete(args.id);
 });
 
 ipcMain.handle('voked:loadConfig', async (_e: any, cwd: string): Promise<any> => {

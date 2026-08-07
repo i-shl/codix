@@ -81,8 +81,8 @@ export interface vokedAPI {
 
   listSessions: (cwd: string) => Promise<unknown[]>;
   createSession: (opts: { cwd: string; title?: string }) => Promise<unknown>;
-  loadSession: (id: string) => Promise<unknown>;
-  deleteSession: (id: string) => Promise<void>;
+  loadSession: (id: string, cwd: string) => Promise<unknown>;
+  deleteSession: (id: string, cwd: string) => Promise<void>;
 
   loadConfig: (cwd: string) => Promise<GlobalConfig>;
   loadGlobalConfig: () => Promise<GlobalConfig>;
